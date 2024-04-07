@@ -1,0 +1,92 @@
+[
+  {
+    "id": 0,
+    "class": "dracula",
+    "name_ru": "Дракула",
+    "name_en": "Dracula",
+    "max_wounds": 15,
+    "max_events": 4,
+    "refill_combat": 5,
+    "dynamic": {
+      "location": "undefined",
+      "wounds": 0,
+      "combat_cards": [],
+      "event_cards": []}
+  },
+  {
+    "id": 1,
+    "class": "lord",
+    "name_ru": "Лорд Годалминг",
+    "name_en": "Lord Gpdalming",
+    "max_wounds": 11,
+    "max_bites": 2,
+    "max_items": 3,
+    "max_events": 3,
+    "dynamic": {
+      "location": "undefined",
+      "wounds": 0,
+      "bites": 0,
+      "item_cards": [],
+      "event_cards": [],
+      "knock_down": 0,
+      "dead": 0
+    }
+  },
+  {
+    "id": 2,
+    "class": "doc",
+    "name_ru": "Доктор Джон Сьюард",
+    "name_en": "Dr John Steward",
+    "max_wounds": 9,
+    "max_bites": 2,
+    "max_items": 4,
+    "max_events": 4,
+    "dynamic": {
+      "location": "undefined",
+      "wounds": 0,
+      "bites": 0,
+      "item_cards": [],
+      "event_cards": [],
+      "knock_down": 0,
+      "dead": 0
+    }
+  },
+  {
+    "id": 3,
+    "class": "lead",
+    "name_ru": "Ван Хельсинг",
+    "name_en": "Van Helsing",
+    "max_wounds": 8,
+    "max_bites": 3,
+    "max_items": 3,
+    "max_events": 3,
+    "dynamic": {
+      "location": "undefined",
+      "wounds": 0,
+      "bites": 0,
+      "item_cards": [],
+      "event_cards": [],
+      "knock_down": 0,
+      "dead": 0
+    }
+  },
+  {
+    "id": 4,
+    "class": "mina",
+    "name_ru": "Мина Харкер",
+    "name_en": "Mina Harker",
+    "max_wounds": 9,
+    "max_bites": 1,
+    "max_items": 3,
+    "max_events": 3,
+    "dynamic": {
+      "location": "undefined",
+      "wounds": 0,
+      "bites": 0,
+      "item_cards": [],
+      "event_cards": [],
+      "knock_down": 0,
+      "dead": 0
+    }
+  }
+]
