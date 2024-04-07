@@ -1,0 +1,9 @@
+{
+  "weeks_passed": 0,
+  "day": 1,
+  "starting_phase": "game_preparation",
+  "situation": "regular",
+  "current_influence": 0,
+  "map": "test_map_1.json",
+  "active_effects": []
+}
