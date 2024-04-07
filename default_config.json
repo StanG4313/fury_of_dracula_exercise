@@ -1,0 +1,10 @@
+{
+  "weeks_may_pass": [0, 3],
+  "days_in_week": [1, 7],
+  "phases_available": ["game_preparation", "day", "night"],
+  "situations_available": ["regular"],
+  "influence_range": [0, 13],
+  "maps": ["test_map_1.json"],
+  "available_effects": [],
+  "hunter_actions_available": ["move"]
+}
