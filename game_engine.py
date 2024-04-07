@@ -130,7 +130,7 @@ class GameEngine:
         self.situation = game_preset["situation"]
         self.current_influence = game_preset["current_influence"]
         self.active_effects = game_preset["active_effects"]
-        with open(game_preset["map"]) as map:
-            self.map = json.load(map)
+        with open(game_preset["map"]) as map_file:
+            self.map = json.load(map_file)
         with open(game_preset["players"]) as players:
             self.players = json.load(players)
