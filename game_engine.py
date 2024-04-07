@@ -151,9 +151,6 @@ class GameEngine:
             location = input()
             if location.isdigit():
                 self.players[dracula_index]["dynamic"]["location"] = int(location)
-            else:
-                pass
-
 
         self.phase = "day"
 
