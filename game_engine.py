@@ -36,6 +36,10 @@ def validate_preset(config, preset):
             print(effect, "from preset active effects is not in available effects in config.")
             sys.exit(0)
 
+    if not preset["players"] in config["player_collections"]:
+        print("Game characters from preset is not in available collections in config.")
+        sys.exit(0)
+
 
 class GameEngine:
 
@@ -50,12 +54,14 @@ class GameEngine:
         self.current_influence = "undefined"
         self.map = "undefined"
         self.active_effects = "undefined"
+        self.players = "undefined"
 
         GameEngine.use_config_and_preset(self, config_file_path, game_preset_file_path)
 
         print("Game engine ready at", start_time)
 
     def play(self):
+
         command = ""
         while command.upper() != "EXIT":
             print('Type some command! (to stop playing type "exit")')
@@ -91,3 +97,5 @@ class GameEngine:
         self.active_effects = game_preset["active_effects"]
         with open(game_preset["map"]) as map:
             self.map = json.load(map)
+        with open(game_preset["players"]) as players:
+            self.players = json.load(players)

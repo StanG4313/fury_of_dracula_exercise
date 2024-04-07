@@ -6,5 +6,6 @@
   "influence_range": [0, 13],
   "maps": ["test_map_1.json"],
   "available_effects": [],
-  "hunter_actions_available": ["move"]
+  "hunter_actions_available": ["move"],
+  "player_collections": ["default_characters.json"]
 }

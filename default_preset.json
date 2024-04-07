@@ -5,5 +5,6 @@
   "situation": "regular",
   "current_influence": 0,
   "map": "test_map_1.json",
-  "active_effects": []
+  "active_effects": [],
+  "players": "default_characters.json"
 }
