@@ -90,8 +90,72 @@ class GameEngine:
 
     def prepare_game(self):
         print("Game preparation in progress")
-        self.phase = "day"
+        hunters_spawn_available = [location for location in self.map if location["type"] == "city"]
 
+        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
+        dracula_index = [index for index in range(len(self.players)) if index not in hunters_indexes][0]
+
+        confirms = [False] * len(hunters_indexes)
+
+        print()
+        print("Current hunters position:")
+        for index in hunters_indexes:
+            print(self.players[index]["name_ru"], ": ", self.players[index]["dynamic"]["location"], sep="")
+
+        while not any(confirms):
+            print()
+            print("Available start locations:")
+            for city in hunters_spawn_available:
+                if city["big"]:
+                    size = "big"
+                else:
+                    size = "small"
+
+                print(city["title_ru"], ", size: ", size, sep="")
+            print()
+
+            dracula_available_spawn_locations = [location["id"] for location in hunters_spawn_available]
+            for index in hunters_indexes:
+                location = "undefined"
+                while location not in [str(location["id"]) for location in self.map]:
+                    print(self.players[index]["name_ru"], ", please, specify spawn location NUMBER from available:",
+                          sep="")
+                    location = input()
+                if int(location) in dracula_available_spawn_locations:
+                    dracula_available_spawn_locations.remove(int(location))
+                self.players[index]["dynamic"]["location"] = location
+
+            print("Current hunters position:")
+            for index in hunters_indexes:
+                print(self.players[index]["name_ru"], ": ", self.players[index]["dynamic"]["location"], sep="",
+                      end=", ")  # TODO: make Map class and implement find_location_by_id
+
+            confirms = []
+            for index in hunters_indexes:
+                print(self.players[index]["name_ru"], "please, confirm readiness by typing Y below:")
+                response = input()
+                if response.upper() == "Y":
+                    confirms.append(True)
+                else:
+                    confirms.append(False)
+                    break
+
+        print()
+        print("Final hunters position:")
+        for index in hunters_indexes:
+            print(self.players[index]["name_ru"], ": ", self.players[index]["dynamic"]["location"], sep="",
+                  )
+
+        while (self.players[dracula_index]["dynamic"]["location"]) not in dracula_available_spawn_locations:
+            print("Dracula, please, specify NUMBER of your starting position:")
+            location = input()
+            if location.isdigit():
+                self.players[dracula_index]["dynamic"]["location"] = int(location)
+            else:
+                pass
+
+
+        self.phase = "day"
 
     def play_day(self):
         print("Play day")
