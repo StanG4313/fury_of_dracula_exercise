@@ -128,7 +128,7 @@ class GameEngine:
             print("Current hunters position:")
             for index in hunters_indexes:
                 print(self.players[index]["name_ru"], ": ", self.players[index]["dynamic"]["location"], sep="",
-                      end=", ")  # TODO: make Map class and implement find_location_by_id
+                      end=", ")
 
             confirms = []
             for index in hunters_indexes:
@@ -195,3 +195,5 @@ class GameEngine:
             self.map = json.load(map_file)
         with open(game_preset["players"]) as players:
             self.players = json.load(players)
+
+#  TODO: implement classes for: map, character, trail, deck
