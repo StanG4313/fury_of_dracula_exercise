@@ -61,12 +61,47 @@ class GameEngine:
         print("Game engine ready at", start_time)
 
     def play(self):
+        result = ""
+        while self.phase != "end":
+            result = self.check_game_result()
 
-        command = ""
-        while command.upper() != "EXIT":
-            print('Type some command! (to stop playing type "exit")')
-            command = input()
-            print(command)
+            if self.phase == "game_preparation":
+                self.prepare_game()
+            elif self.phase == "day":
+                self.play_day()
+            elif self.phase == "night":
+                self.play_night()
+
+        print(result)
+        print("Game ended")
+
+    def check_game_result(self):
+        result = "No result"
+        if self.current_influence >= 13:
+            result = "Dracula wins!"
+            self.phase = "end"
+
+        for player in self.players:
+            if player["class"] == "dracula":
+                if player["dynamic"]["wounds"] >= player["max_wounds"]:
+                    result = "Hunters win!"
+                    self.phase = "end"
+        return result
+
+    def prepare_game(self):
+        print("Game preparation in progress")
+        self.phase = "day"
+
+
+    def play_day(self):
+        print("Play day")
+        self.phase = "night"
+        return
+
+    def play_night(self):
+        print("Play night")
+        self.phase = "end"
+        return
 
     def use_config_and_preset(self, config_file_path, game_preset_file_path):
 
