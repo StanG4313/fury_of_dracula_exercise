@@ -91,10 +91,3 @@ class GameEngine:
         self.active_effects = game_preset["active_effects"]
         with open(game_preset["map"]) as map:
             self.map = json.load(map)
-
-# Изменение значений в конфигурационном файле
-config_data['key_name'] = 'new_value'
-
-# Сохранение изменений в конфигурационном файле
-with open('config.json', 'w') as config_file:
-    json.dump(config_data, config_file)
