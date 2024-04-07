@@ -3,10 +3,38 @@ import json
 import sys
 
 default_config = "default_config.json"
-default_preset = ""
 default_preset = "default_preset.json"
 
 
+def validate_preset(config, preset):
+    if not preset["weeks_passed"] in range(config["weeks_may_pass"][0], config["weeks_may_pass"][1] + 1):
+        print("Weeks_passed value from preset don't pass config requirements.")
+        sys.exit(0)
+
+    if not preset["day"] in range(config["days_in_week"][0], config["days_in_week"][1] + 1):
+        print("weeks_passed value from preset don't pass config requirements.")
+        sys.exit(0)
+
+    if not preset["starting_phase"] in config["phases_available"]:
+        print("Game phase from preset is not in available phases in config.")
+        sys.exit(0)
+
+    if not preset["situation"] in config["situations_available"]:
+        print("Game situation from preset is not in available situations in config.")
+        sys.exit(0)
+
+    if not preset["current_influence"] in range(config["influence_range"][0], config["influence_range"][1] + 1):
+        print("current_influence value from preset don't pass config requirements.")
+        sys.exit(0)
+
+    if not preset["map"] in config["maps"]:
+        print("Map from preset is not in available phases in config.")
+        sys.exit(0)
+
+    for effect in preset["active_effects"]:
+        if effect not in config["available_effects"]:
+            print(effect, "from preset active effects is not in available effects in config.")
+            sys.exit(0)
 
 
 class GameEngine:
@@ -53,9 +81,7 @@ class GameEngine:
         with open(preset) as preset:
             game_preset = json.load(preset)
 
-# Чтение конфигурационного файла
-with open('config.json') as config_file:
-    config_data = json.load(config_file)
+        validate_preset(game_config, game_preset)
 
         self.weeks_passed = game_preset["weeks_passed"]
         self.day = game_preset["day"]
