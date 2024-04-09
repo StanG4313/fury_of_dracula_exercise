@@ -25,5 +25,21 @@ class Deck:
     def shuffle(self):
         random.shuffle(self.content)
 
-    #  TODO: add methods: take_first, take_last, add_item, get_items_amount, create child classes for tickets,
+    def take_first(self):
+        if self.content:
+            first_element = self.content[0]
+            del self.content[0]
+            return first_element
+        else:
+            return None
+
+    def take_last(self):
+        if self.content:
+            last_element = self.content[-1]
+            del self.content[-1]
+            return last_element
+        else:
+            return None
+
+    #  TODO: add methods: add_item, get_items_amount, create child classes for tickets,
     #   items, Dracula battle cards and events (stock and discard for all types)
