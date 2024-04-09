@@ -1,4 +1,5 @@
 import json
+import random
 
 
 class Deck:
@@ -21,5 +22,8 @@ class Deck:
 
         self.content = contents
 
-    #  TODO: add methods: shuffle, take_first, take_last, add_item, get_items_amount, create child classes for tickets,
+    def shuffle(self):
+        random.shuffle(self.content)
+
+    #  TODO: add methods: take_first, take_last, add_item, get_items_amount, create child classes for tickets,
     #   items, Dracula battle cards and events (stock and discard for all types)
