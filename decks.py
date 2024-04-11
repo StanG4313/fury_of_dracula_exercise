@@ -3,24 +3,29 @@ import random
 
 
 class Deck:
-    def __init__(self, file_path):
-        with open(file_path) as file:
-            templates = json.load(file)
+    def __init__(self, file_path=None):
 
-        contents = []
-        content_id = 1
+        if file_path is None:
+            self.content = []
 
-        for item in templates:
-            for _ in range(item["amount"]):
-                content_element = dict()
-                content_element["id"] = content_id
-                content_id += 1
-                for key in item.keys():
-                    if key != "amount":
-                        content_element[key] = item[key]
-                contents.append(content_element)
+        else:
+            with open(file_path) as file:
+                templates = json.load(file)
 
-        self.content = contents
+            contents = []
+            content_id = 1
+
+            for item in templates:
+                for _ in range(item["amount"]):
+                    content_element = dict()
+                    content_element["id"] = content_id
+                    content_id += 1
+                    for key in item.keys():
+                        if key != "amount":
+                            content_element[key] = item[key]
+                    contents.append(content_element)
+
+            self.content = contents
 
     def shuffle(self):
         random.shuffle(self.content)
