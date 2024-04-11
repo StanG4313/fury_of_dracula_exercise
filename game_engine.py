@@ -69,8 +69,12 @@ class GameEngine:
                 self.prepare_game()
             elif self.phase == "day":
                 self.play_day()
+            elif self.phase == "sunset":
+                self.play_sunset()
             elif self.phase == "night":
                 self.play_night()
+            elif self.phase == "sunrise":
+                self.play_sunrise()
 
         print(result)
         print("Game ended")
@@ -156,11 +160,21 @@ class GameEngine:
 
     def play_day(self):
         print("Play day")
+        self.phase = "sunset"
+        return
+
+    def play_sunset(self):
+        print('Play sunset')
         self.phase = "night"
         return
 
     def play_night(self):
         print("Play night")
+        self.phase = "sunrise"
+        return
+
+    def play_sunrise(self):
+        print("Play sunrise")
         self.phase = "end"
         return
 
