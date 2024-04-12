@@ -210,4 +210,4 @@ class GameEngine:
         with open(game_preset["players"]) as players:
             self.players = json.load(players)
 
-#  TODO: implement classes for: map, character, trail, deck
+#  TODO: implement classes for: map, character
