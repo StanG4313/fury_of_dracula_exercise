@@ -1,0 +1,27 @@
+[
+  {
+    "amount": 4,
+    "white": 3,
+    "yellow": 2
+  },
+  {
+    "amount": 4,
+    "white": 2,
+    "yellow": 2
+  },
+  {
+    "amount": 3,
+    "white": 2,
+    "yellow": 1
+    },
+  {
+    "amount": 2,
+    "white": 1,
+    "yellow": 1
+    },
+  {
+    "amount": 3,
+    "white": 1,
+    "yellow": 0
+  }
+]
