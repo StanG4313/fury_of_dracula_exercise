@@ -155,7 +155,7 @@ class Display:
             else:
                 size = small
 
-            print(city[key], filler, size, sep="")
+            print(city["id"], ") ", city[key], filler, size, sep="")
         print()
 
     def ask_player_to_choose_start_location(self, hunter):
