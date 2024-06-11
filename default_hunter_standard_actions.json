@@ -1,0 +1,35 @@
+[
+    {
+        "type": "punch",
+        "title_ru": "Удар",
+        "description_ru": "Вампир получает 1 рану",
+        "lore_ru": "Затем начался кошмар. Его глаза расширились и полыхнули алым, и я сделал первое, что пришло на ум...",
+        "title_en": "Punch",
+        "description_en": "Desc_eng_placeholder",
+        "lore_en": "Lore_eng_placeholder",
+        "symbols": [0, 0, 0, 1, 1, 0, 0],
+        "effect": "deal dmg:1"
+    },
+    {
+        "type": "dodging",
+        "title_ru": "Уклонение",
+        "description_ru": "",
+        "lore_ru": "С удивительной лёгкостью и непринуждённостью он раз за разом уворачивался от когтей одного из злобных отродий Дракулы",
+        "title_en": "Dodging",
+        "description_en": "",
+        "lore_en": "Lore_eng_placeholder",
+        "symbols": [1, 1, 1, 0, 0, 0, 0],
+        "effect": "no_effect"
+    },
+    {
+        "type": "flight",
+        "title_ru": "Бегство",
+        "description_ru": "Вы выходите из этого боя",
+        "lore_ru": "охваченный ужасом, я поскользнулся на мокрых дубовых досках. И всё же мне удалось броситься прочь до того, как это... существо добралось бы до меня",
+        "title_en": "Flight",
+        "description_en": "Desc_eng_placeholder",
+        "lore_en": "Lore_eng_placeholder",
+        "symbols": [0, 1, 0, 0, 1, 0, 0],
+        "effect": "leave_fight"
+    }
+]
