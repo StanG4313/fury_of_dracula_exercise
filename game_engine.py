@@ -4,8 +4,8 @@ import sys
 
 from display import Display
 
-default_config = "default_config.json"
-default_preset = "default_preset.json"
+default_config = "res/default_config.json"
+default_preset = "res/default_preset.json"
 
 
 class GameEngine:
