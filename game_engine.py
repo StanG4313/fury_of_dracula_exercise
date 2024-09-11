@@ -4,6 +4,7 @@ import sys
 
 from display import Display
 from decks import Inventory, Deck, EventsDeck, Discard
+from trail import Trail
 
 default_config = "res/default_config.json"
 default_preset = "res/default_preset.json"
@@ -35,6 +36,7 @@ class GameEngine:
         self.tickets_discard = "undefined"
         self.confronts_discard = "undefined"
         self.events_discard = "undefined"
+        self.trail = "undefined"
 
         GameEngine.use_config_and_preset(self, config_file_path, game_preset_file_path)
 
@@ -118,6 +120,7 @@ class GameEngine:
             if location.isdigit():
                 self.players[dracula_index]["dynamic"]["location"] = int(location)
 
+        self.trail.add_new_trail_item(location)
         self.phase = "day"
 
     def play_day(self):
@@ -176,6 +179,7 @@ class GameEngine:
         self.tickets_discard = Discard(game_preset["tickets_discard"])
         self.confronts_discard = Discard(game_preset["confronts_discard"])
         self.events_discard = Discard(game_preset["events_discard"])
+        self.trail = Trail()
 
         with open(game_preset["map"]) as map_file:
             self.map = json.load(map_file)
@@ -192,6 +196,7 @@ class GameEngine:
                 self.players[i]["dynamic"]["tickets"] = Inventory()
 
         # TODO: add inventory filling from presets using decks.Inventory class
+        # TODO: add trail generation from presets
 
     def validate_preset(self, config, preset):
         if not preset["weeks_passed"] in range(config["weeks_may_pass"][0], config["weeks_may_pass"][1] + 1):

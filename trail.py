@@ -72,4 +72,6 @@ class Trail:
         else:
             return False
 
+    def open_city_by_number_in_trail(self, number_in_trail):
+        pass  # TODO
 
