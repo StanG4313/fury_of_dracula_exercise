@@ -2,7 +2,7 @@ import json
 import random
 
 
-class Deck:
+class BaseDeck:
     def __init__(self, file_path=None):
 
         if file_path is None:
@@ -27,6 +27,38 @@ class Deck:
 
             self.content = contents
 
+    def add(self, items):
+        self.content = items.extend(self.content)
+
+    def empty(self):
+        contents = self.content
+        self.content = []
+
+        return contents
+
+    def get_items_amount(self):
+        return len(self.content)
+
+
+class Discard(BaseDeck):
+    def take_by_attribute(self, key, value):
+        pass
+
+    def take_by_id(self, element_id):
+        for i, element in enumerate(self.content):
+            if element.get('id') == element_id:
+                return self.content.pop(i)
+        return None
+
+    # Use take_by_id as a base
+
+
+class Inventory(Discard):
+    def enumerate(self):
+        pass  # add fields needed to be enumerated
+
+
+class Deck(BaseDeck):
     def shuffle(self):
         random.shuffle(self.content)
 
@@ -38,6 +70,15 @@ class Deck:
         else:
             return None
 
+    def add(self, items):
+        super().add(items)
+        self.shuffle()
+
+
+class EventsDeck(Deck):
+    def add_to_the_end(self, items):
+        self.content = self.content.extend(items)
+
     def take_last(self):
         if self.content:
             last_element = self.content[-1]
@@ -45,6 +86,3 @@ class Deck:
             return last_element
         else:
             return None
-
-    #  TODO: add methods: add_item, get_items_amount, create child classes for tickets,
-    #   items, Dracula battle cards and events (stock and discard for all types)
