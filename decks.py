@@ -28,7 +28,8 @@ class BaseDeck:
             self.content = contents
 
     def add(self, items):
-        self.content = items.extend(self.content)
+        items.extend(self.content)
+        self.content = items
 
     def empty(self):
         contents = self.content
@@ -77,7 +78,7 @@ class Deck(BaseDeck):
 
 class EventsDeck(Deck):
     def add_to_the_end(self, items):
-        self.content = self.content.extend(items)
+        self.content.extend(reversed(items))
 
     def take_last(self):
         if self.content:
