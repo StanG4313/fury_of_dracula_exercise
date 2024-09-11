@@ -4,8 +4,8 @@
   "phases_available": ["game_preparation", "day", "sunset", "night", "sunrise", "end"],
   "situations_available": ["regular"],
   "influence_range": [0, 13],
-  "maps": ["test_map_1.json"],
+  "maps": ["res/test_map_1.json"],
   "available_effects": [],
   "hunter_actions_available": ["move"],
-  "player_collections": ["default_characters.json"]
+  "player_collections": ["res/default_characters.json"]
 }
