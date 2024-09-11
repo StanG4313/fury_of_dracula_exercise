@@ -3,6 +3,7 @@ import json
 import sys
 
 from display import Display
+from decks import Inventory, Deck, EventsDeck, Discard
 
 default_config = "res/default_config.json"
 default_preset = "res/default_preset.json"
@@ -25,6 +26,15 @@ class GameEngine:
         self.map = "undefined"
         self.active_effects = "undefined"
         self.players = "undefined"
+        self.items_deck = "undefined"
+        self.tickets_deck = "undefined"
+        self.confronts_deck = "undefined"
+        self.fight_deck = "undefined"
+        self.events_deck = "undefined"
+        self.items_discard = "undefined"
+        self.tickets_discard = "undefined"
+        self.confronts_discard = "undefined"
+        self.events_discard = "undefined"
 
         GameEngine.use_config_and_preset(self, config_file_path, game_preset_file_path)
 
@@ -157,10 +167,31 @@ class GameEngine:
         self.situation = game_preset["situation"]
         self.current_influence = game_preset["current_influence"]
         self.active_effects = game_preset["active_effects"]
+        self.items_deck = Deck(game_preset["items_deck"])
+        self.tickets_deck = Deck(game_preset["tickets_deck"])
+        self.confronts_deck = Deck(game_preset["confronts_deck"])
+        self.fight_deck = Deck(game_preset["fight_deck"])
+        self.events_deck = EventsDeck(game_preset["events_deck"])
+        self.items_discard = Discard(game_preset["items_discard"])
+        self.tickets_discard = Discard(game_preset["tickets_discard"])
+        self.confronts_discard = Discard(game_preset["confronts_discard"])
+        self.events_discard = Discard(game_preset["events_discard"])
+
         with open(game_preset["map"]) as map_file:
             self.map = json.load(map_file)
         with open(game_preset["players"]) as players:
             self.players = json.load(players)
+
+        for i in range(len(self.players)):
+            if self.players[i]["class"] == "dracula":
+                self.players[i]["dynamic"]["combat_cards"] = Inventory()
+                self.players[i]["dynamic"]["event_cards"] = Inventory()
+            else:
+                self.players[i]["dynamic"]["item_cards"] = Inventory()
+                self.players[i]["dynamic"]["event_cards"] = Inventory()
+                self.players[i]["dynamic"]["tickets"] = Inventory()
+
+        # TODO: add inventory filling from presets using decks.Inventory class
 
     def validate_preset(self, config, preset):
         if not preset["weeks_passed"] in range(config["weeks_may_pass"][0], config["weeks_may_pass"][1] + 1):

@@ -9,9 +9,7 @@
     "refill_combat": 5,
     "dynamic": {
       "location": "undefined",
-      "wounds": 0,
-      "combat_cards": [],
-      "event_cards": []}
+      "wounds": 0}
   },
   {
     "id": 1,
@@ -26,8 +24,6 @@
       "location": "undefined",
       "wounds": 0,
       "bites": 0,
-      "item_cards": [],
-      "event_cards": [],
       "knock_down": 0,
       "dead": 0
     }
@@ -45,8 +41,6 @@
       "location": "undefined",
       "wounds": 0,
       "bites": 0,
-      "item_cards": [],
-      "event_cards": [],
       "knock_down": 0,
       "dead": 0
     }
@@ -64,8 +58,6 @@
       "location": "undefined",
       "wounds": 0,
       "bites": 0,
-      "item_cards": [],
-      "event_cards": [],
       "knock_down": 0,
       "dead": 0
     }
@@ -83,8 +75,6 @@
       "location": "undefined",
       "wounds": 0,
       "bites": 0,
-      "item_cards": [],
-      "event_cards": [],
       "knock_down": 0,
       "dead": 0
     }
