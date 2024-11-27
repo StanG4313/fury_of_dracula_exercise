@@ -1,11 +1,3 @@
 {
-  "weeks_may_pass": [0, 3],
-  "days_in_week": [1, 7],
-  "phases_available": ["game_preparation", "day", "sunset", "night", "sunrise", "end"],
-  "situations_available": ["regular"],
-  "influence_range": [0, 13],
-  "maps": ["res/test_map_1.json"],
-  "available_effects": [],
-  "hunter_actions_available": ["move"],
-  "player_collections": ["res/default_characters.json"]
+  "influence_range": [0, 13]
 }
