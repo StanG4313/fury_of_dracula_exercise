@@ -6,39 +6,90 @@ from display import Display
 from decks import Inventory, Deck, EventsDeck, Discard
 from trail import Trail
 
-default_config = "res/default_config.json"
-default_preset = "res/default_preset.json"
+default_config_path = "res/default_config.json"
+default_preset_path = "res/default_preset.json"
 
 
 class GameEngine:
 
     def __init__(self, config_file_path, game_preset_file_path, lang):
 
+        self.active_effects = None
+        self.phase = None
+        self.current_influence = None
         self.show = Display(lang)
         self.show.phrase("welcome")
 
         start_time = datetime.datetime.now()
-        self.show.engine_startup_with_timestamp("start", start_time)
-        self.weeks_passed = "undefined"
-        self.day = "undefined"
-        self.phase = "undefined"
-        self.situation = "undefined"
-        self.current_influence = "undefined"
-        self.map = "undefined"
-        self.active_effects = "undefined"
-        self.players = "undefined"
-        self.items_deck = "undefined"
-        self.tickets_deck = "undefined"
-        self.confronts_deck = "undefined"
-        self.fight_deck = "undefined"
-        self.events_deck = "undefined"
-        self.items_discard = "undefined"
-        self.tickets_discard = "undefined"
-        self.confronts_discard = "undefined"
-        self.events_discard = "undefined"
-        self.trail = "undefined"
 
-        GameEngine.use_config_and_preset(self, config_file_path, game_preset_file_path)
+        if not config_file_path:
+            self.show.phrase("default_config")
+            game_config = {}
+        else:
+            with open(config_file_path) as config:
+                game_config = json.load(config)
+
+        if not game_preset_file_path:
+            self.show.phrase("default_preset")
+            game_preset = {}
+        else:
+            with open(game_preset_file_path) as preset:
+                game_preset = json.load(preset)
+
+
+        with open(default_config_path) as config:
+            default_config = json.load(config)
+        with open(default_preset_path) as config:
+            default_preset = json.load(config)
+
+        attributes = [
+            ("weeks_passed", "weeks_passed"),
+            ("day", "day"),
+            ("phase", "starting_phase"),
+            ("situation", "starting_phase"),
+            ("situation", "starting_phase"),
+            ("current_influence", "current_influence"),
+            ("active_effects", "active_effects")
+        ]
+
+        for attribute, key in attributes:
+            setattr(self, attribute, game_preset.get(key, default_preset[key]))
+
+        self.confronts_deck = game_preset.get("confronts_deck", Deck(default_preset["confronts_deck"]))
+        self.fight_deck = game_preset.get("fight_deck", Deck(default_preset["fight_deck"]))
+        self.events_deck = game_preset.get("events_deck", EventsDeck(default_preset["events_deck"]))
+        self.items_discard = game_preset.get("items_discard", Discard(default_preset["items_discard"]))
+        self.tickets_discard = game_preset.get("tickets_discard", Discard(default_preset["tickets_discard"]))
+        self.confronts_discard = game_preset.get("confronts_discard", Discard(default_preset["confronts_discard"]))
+        self.events_discard = game_preset.get("events_discard", Discard(default_preset["events_discard"]))
+
+        self.show.engine_startup_with_timestamp("start", start_time)
+
+        self.items_deck = game_preset.get("items_deck", Deck(default_preset["items_deck"]))
+        self.tickets_deck = game_preset.get("tickets_deck", Deck(default_preset["tickets_deck"]))
+        self.trail = game_preset.get("Trail", Trail())
+
+        with open(game_preset.get("map", default_preset["map"])) as map_file:
+            self.map = json.load(map_file)
+        with open(game_preset.get("players", default_preset["players"])) as players:
+            self.players = json.load(players)
+
+        for i in range(len(self.players)):
+            if self.players[i]["class"] == "dracula":
+                self.players[i]["dynamic"]["combat_cards"] = Inventory()
+                self.players[i]["dynamic"]["event_cards"] = Inventory()
+            else:
+                self.players[i]["dynamic"]["item_cards"] = Inventory()
+                self.players[i]["dynamic"]["event_cards"] = Inventory()
+                self.players[i]["dynamic"]["tickets"] = Inventory()
+
+
+        self.config = default_config
+        for key in game_config:
+            self.config[key] = game_config[key]
+
+        # TODO: add inventory filling from presets using decks.Inventory class
+        # TODO: add trail generation from presets
 
         end_time = datetime.datetime.now()
         self.show.engine_startup_with_timestamp("end", end_time)
@@ -64,7 +115,7 @@ class GameEngine:
 
     def check_game_result(self):
         result = "no_result"
-        if self.current_influence >= 13:
+        if self.current_influence >= self.config["influence_range"][1]:
             result = "dracula_win"
             self.phase = "end"
 
@@ -85,6 +136,8 @@ class GameEngine:
         confirms = [False]
 
         self.show.current_hunters_position(self.players, hunters_indexes)
+
+        dracula_available_spawn_locations = None
 
         while not any(confirms):
             self.show.available_start_locations(hunters_spawn_available)
@@ -114,6 +167,8 @@ class GameEngine:
 
         self.show.current_hunters_position(self.players, hunters_indexes, final=True)
 
+        location = None
+
         while (self.players[dracula_index]["dynamic"]["location"]) not in dracula_available_spawn_locations:
             self.show.ask_player_to_choose_start_location(self.players[dracula_index])
             location = input()
@@ -142,94 +197,5 @@ class GameEngine:
         self.show.phrase("play_sunrise")
         self.phase = "end"
         return
-
-    def use_config_and_preset(self, config_file_path, game_preset_file_path):
-
-        if not config_file_path:
-            self.show.phrase("default_config")
-            config = default_config
-        else:
-            config = config_file_path
-
-        if not game_preset_file_path:
-            self.show.phrase("default_preset")
-            preset = default_preset
-        else:
-            preset = game_preset_file_path
-
-        with open(config) as config:
-            game_config = json.load(config)
-        with open(preset) as preset:
-            game_preset = json.load(preset)
-
-        self.validate_preset(game_config, game_preset)
-
-        self.weeks_passed = game_preset["weeks_passed"]
-        self.day = game_preset["day"]
-        self.phase = game_preset["starting_phase"]
-        self.situation = game_preset["situation"]
-        self.current_influence = game_preset["current_influence"]
-        self.active_effects = game_preset["active_effects"]
-        self.items_deck = Deck(game_preset["items_deck"])
-        self.tickets_deck = Deck(game_preset["tickets_deck"])
-        self.confronts_deck = Deck(game_preset["confronts_deck"])
-        self.fight_deck = Deck(game_preset["fight_deck"])
-        self.events_deck = EventsDeck(game_preset["events_deck"])
-        self.items_discard = Discard(game_preset["items_discard"])
-        self.tickets_discard = Discard(game_preset["tickets_discard"])
-        self.confronts_discard = Discard(game_preset["confronts_discard"])
-        self.events_discard = Discard(game_preset["events_discard"])
-        self.trail = Trail()
-
-        with open(game_preset["map"]) as map_file:
-            self.map = json.load(map_file)
-        with open(game_preset["players"]) as players:
-            self.players = json.load(players)
-
-        for i in range(len(self.players)):
-            if self.players[i]["class"] == "dracula":
-                self.players[i]["dynamic"]["combat_cards"] = Inventory()
-                self.players[i]["dynamic"]["event_cards"] = Inventory()
-            else:
-                self.players[i]["dynamic"]["item_cards"] = Inventory()
-                self.players[i]["dynamic"]["event_cards"] = Inventory()
-                self.players[i]["dynamic"]["tickets"] = Inventory()
-
-        # TODO: add inventory filling from presets using decks.Inventory class
-        # TODO: add trail generation from presets
-
-    def validate_preset(self, config, preset):
-        if not preset["weeks_passed"] in range(config["weeks_may_pass"][0], config["weeks_may_pass"][1] + 1):
-            self.show.phrase("weeks_value_error")
-            sys.exit(0)
-
-        if not preset["day"] in range(config["days_in_week"][0], config["days_in_week"][1] + 1):
-            self.show.phrase("day_value_error")
-            sys.exit(0)
-
-        if not preset["starting_phase"] in config["phases_available"]:
-            self.show.phrase("phase_error")
-            sys.exit(0)
-
-        if not preset["situation"] in config["situations_available"]:
-            self.show.phrase("situation_error")
-            sys.exit(0)
-
-        if not preset["current_influence"] in range(config["influence_range"][0], config["influence_range"][1] + 1):
-            self.show.phrase("influence_error")
-            sys.exit(0)
-
-        if not preset["map"] in config["maps"]:
-            self.show.phrase("map_error")
-            sys.exit(0)
-
-        for effect in preset["active_effects"]:
-            if effect not in config["available_effects"]:
-                self.show.effect_error(effect)
-                sys.exit(0)
-
-        if not preset["players"] in config["player_collections"]:
-            self.show.phrase("character_error")
-            sys.exit(0)
 
 #  TODO: implement classes for: map, character
