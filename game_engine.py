@@ -5,6 +5,7 @@ import sys
 from display import Display
 from decks import Inventory, Deck, EventsDeck, Discard
 from trail import Trail
+from map import GameMap
 
 default_config_path = "res/default_config.json"
 default_preset_path = "res/default_preset.json"
@@ -69,8 +70,8 @@ class GameEngine:
         self.tickets_deck = game_preset.get("tickets_deck", Deck(default_preset["tickets_deck"]))
         self.trail = game_preset.get("Trail", Trail())
 
-        with open(game_preset.get("map", default_preset["map"])) as map_file:
-            self.map = json.load(map_file)
+        self.map = GameMap(game_preset.get("map", default_preset["map"]))
+
         with open(game_preset.get("players", default_preset["players"])) as players:
             self.players = json.load(players)
 
@@ -82,7 +83,6 @@ class GameEngine:
                 self.players[i]["dynamic"]["item_cards"] = Inventory()
                 self.players[i]["dynamic"]["event_cards"] = Inventory()
                 self.players[i]["dynamic"]["tickets"] = Inventory()
-
 
         self.config = default_config
         for key in game_config:
@@ -128,7 +128,7 @@ class GameEngine:
 
     def prepare_game(self):
         self.show.phrase("prepare_game")
-        hunters_spawn_available = [location for location in self.map if location["type"] == "city"]
+        hunters_spawn_available = [location for location in self.map.locations if location["type"] == "city"]
 
         hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
         dracula_index = [index for index in range(len(self.players)) if index not in hunters_indexes][0]
@@ -145,7 +145,7 @@ class GameEngine:
             dracula_available_spawn_locations = [location["id"] for location in hunters_spawn_available]
             for index in hunters_indexes:
                 location = "undefined"
-                while location not in [str(location["id"]) for location in self.map]:
+                while location not in [str(location["id"]) for location in self.map.locations]:
                     self.show.ask_player_to_choose_start_location(self.players[index])
                     location = input()
                 if int(location) in dracula_available_spawn_locations:
@@ -157,7 +157,6 @@ class GameEngine:
             confirms = []
             for index in hunters_indexes:
                 self.show.ask_hunter_to_confirm_readiness(self.players[index])
-                # print(self.players[index]["name_ru"], "please, confirm readiness by typing Y below:")
                 response = input()
                 if response.upper() == "Y":
                     confirms.append(True)
