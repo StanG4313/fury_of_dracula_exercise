@@ -127,6 +127,37 @@ class GameEngine:
                     self.phase = "end"
         return result
 
+    def check_actions_available(self, player):
+        actions = dict()
+        i = 1
+        current_location = player["dynamic"]["location"] # Change to .location method when changed to player/hunter class instead of dicts
+
+        if player["dynamic"]["dead"]:
+            actions["0"] = "dead"
+            return actions
+        if player["dynamic"]["knock_down"]:
+            actions["1"] = "rise_up"
+            return actions  # TODO: check it with active effect of more then one action at day
+
+
+        if self.phase == "day": # add option of special event card for night moving
+            if len(self.map.get_locations_walk(current_location,1)) != 0:
+                actions[str(i)] = "move_by_road"
+                i += 1
+            if len(player["dynamic"]["tickets"].content) != 0 and len(self.map.get_locations_railway(current_location, 1, 1)) != 0: # maybe it should be related to amount of yellow/white railways for locations and for the tickets
+                actions[str(i)] = "move_by_railway"
+                i += 1
+            if len(self.map.get_locations_sea(current_location,1)):
+                actions[str(i)] = "move_by_sea"
+                i += 1
+            if self.map.find_by_id(current_location)["type"] != "sea":
+                actions[str(i)] = "heal"
+                i += 1
+
+            # TODO: add actions: special action, shopping, search, use card, trade with other hunter
+
+        return actions
+
     def prepare_game(self):
         self.show.phrase("prepare_game")
         hunters_spawn_available = [location for location in self.map.locations if location["type"] == "city"]
@@ -197,6 +228,39 @@ class GameEngine:
         answer = input()
         if answer != "":
             self.save_state(answer)
+
+        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
+        if "custom_order" in self.active_effects:
+            pass # TODO: add after adding custom order active effect and event card
+        else:
+            for i in hunters_indexes:
+                current_player = self.players[i]
+                self.show.current_player(current_player)# say player's name (current player:)
+                actions_available = self.check_actions_available(current_player)
+                self.show.actions_available(actions_available)
+                if actions_available.get("0") == "dead":
+                    continue
+                elif actions_available.get("1") == "rise_up":
+                    current_player["dynamic"]["knock_down"] = 0 # TODO: change to player class method
+                else:
+                    action_chosen = None
+                    while action_chosen not in actions_available.keys():
+                        action_chosen = input()
+
+                    actions = {
+                        "move_by_road": self.move_by_road(current_player),
+                        "move_by_railway": self.move_by_railway(current_player),
+                        "move_by_sea": self.move_by_sea(current_player),
+                        "heal": self.heal(current_player)
+                    }
+
+                    result = actions.get(actions_available.get(action_chosen))
+
+                    while not result:
+                        self.show.actions_available(actions_available)
+                        action_chosen = input()
+                        result = actions.get(actions_available.get(action_chosen))
+                    #TODO: app phrase about action executed
         self.phase = "sunset"
         return
 

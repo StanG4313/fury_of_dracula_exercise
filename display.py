@@ -182,3 +182,28 @@ class Display:
         process = {"EN": "loaded from file", "RU": "загружено из файла"} if load else {"EN": "saved to file", "RU": "сохранено в файл"}
         phrase = {"EN": "Game state", "RU": "Состояние игры"}
         print(phrase[self.language], process[self.language], file)
+
+    def current_player(self, player):
+        name = {"EN": "name_en", "RU": "name_ru"}
+        phrase = {"EN": "Current player:",
+                  "RU": "Текущий игрок:"}
+        print(phrase[self.language], player[name[self.language]], )
+
+    def actions_available(self, actions_dict):
+
+        phrase = {
+            "EN": "Choose your action:",
+            "RU": "Выберите действие"
+        }
+        action_names = {
+                        "move_by_road": {"EN": "Move using roads", "RU": "Передвинуться по дороге"},
+                        "move_by_railway": {"EN": "Move using railroads", "RU": "Передвинуться по железной дороге"},
+                        "move_by_sea": {"EN": "Move across the sea", "RU": "Передвинутсья по морю"},
+                        "heal": {"EN": "Rest & heal", "RU": "Отдых и исцеление"}
+        }
+
+
+        print()
+        print(phrase[self.language])
+        for key in actions_dict.keys():
+            print(key, ": ", action_names[actions_dict[key]][self.language], sep="")
