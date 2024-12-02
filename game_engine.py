@@ -214,5 +214,18 @@ class GameEngine:
         self.show.phrase("play_sunrise")
         self.phase = "end"
         return
+    @staticmethod
+    def heal(player):
+        #TODO: add request if wounds == 0 if gonna skip the turn
+
+        if player["class"] == "doc":
+            player["dynamic"]["wounds"] -=2
+        else:
+            player["dynamic"]["wounds"] -= 1
+
+        if player["dynamic"]["wounds"] < 0:
+            player["dynamic"]["wounds"] = 0
+
+        return True
 
 #  TODO: implement classes for: map, character
