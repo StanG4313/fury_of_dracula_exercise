@@ -1,5 +1,6 @@
 import datetime
 import json
+import pickle
 import sys
 
 from display import Display
@@ -13,12 +14,12 @@ default_preset_path = "res/default_preset.json"
 
 class GameEngine:
 
-    def __init__(self, config_file_path, game_preset_file_path, lang):
+    def __init__(self, config_file_path, game_preset_file_path, display):
 
         self.active_effects = None
         self.phase = None
         self.current_influence = None
-        self.show = Display(lang)
+        self.show = display
         self.show.phrase("welcome")
 
         start_time = datetime.datetime.now()
@@ -177,8 +178,25 @@ class GameEngine:
         self.trail.add_new_trail_item(location)
         self.phase = "day"
 
+    def save_state(self, file_path):
+        file_path = file_path + ".pkl"
+        with open(file_path, 'wb') as file:
+            pickle.dump(self, file)
+        self.show.loadsave_report(file_path)
+
+    def load_state(self, file_path):
+        file_path = file_path + ".pkl"
+        with open(file_path, 'rb') as file:
+            engine = pickle.load(file)
+        self.show.loadsave_report(file_path, load = True)
+        return engine
+
     def play_day(self):
         self.show.phrase("play_day")
+        self.show.phrase("wanna_save")
+        answer = input()
+        if answer != "":
+            self.save_state(answer)
         self.phase = "sunset"
         return
 

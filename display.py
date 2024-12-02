@@ -80,6 +80,14 @@ class Display:
                 "EN": "Current phase: Sunrise",
                 "RU": "Наступает рассвет"
             },
+            "wanna_load": {
+                "EN": 'Type the name of your save file to load or press "ENTER" to proceed',
+                "RU": 'Введите имя файла чтобы загрузить сохранение, или нажмите "ENTER" чтобы продолжить'
+            },
+            "wanna_save": {
+                "EN": 'Type the name of your save file to save or press "ENTER" to proceed',
+                "RU": 'Введите имя файла чтобы сохранить состояние игры, или нажмите "ENTER" чтобы продолжить'
+            }
         }
         print(phrases[phrase][self.language])
 
@@ -169,3 +177,8 @@ class Display:
         phrase = {"EN": "please, confirm readiness by typing Y below:",
                   "RU": "пожалуйста, подтвердите готовность вводом символа Y ниже"}
         print(hunter[name[self.language]], phrase[self.language])
+
+    def loadsave_report(self, file, load=False):
+        process = {"EN": "loaded from file", "RU": "загружено из файла"} if load else {"EN": "saved to file", "RU": "сохранено в файл"}
+        phrase = {"EN": "Game state", "RU": "Состояние игры"}
+        print(phrase[self.language], process[self.language], file)
