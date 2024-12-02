@@ -215,10 +215,11 @@ class GameEngine:
             pickle.dump(self, file)
         self.show.loadsave_report(file_path)
 
-    def load_state(self, file_path):
+    def load_state(self, file_path, display):
         file_path = file_path + ".pkl"
         with open(file_path, 'rb') as file:
             engine = pickle.load(file)
+            engine.show = display
         self.show.loadsave_report(file_path, load = True)
         return engine
 

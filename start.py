@@ -9,7 +9,7 @@ def run_main_game_process(config_file_path=None, game_preset_path=None, lang="EN
     display.phrase("wanna_load")
     answer = input()
     if answer != "":
-        engine = engine.load_state(answer)
+        engine = engine.load_state(answer, display)
     engine.play()
 
 
