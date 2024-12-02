@@ -214,6 +214,16 @@ class GameEngine:
         self.show.phrase("play_sunrise")
         self.phase = "end"
         return
+
+    def move_by_road(self, player):
+        pass
+
+    def move_by_railway(self, player):
+        pass
+
+    def move_by_sea(self, player):
+        pass
+
     @staticmethod
     def heal(player):
         #TODO: add request if wounds == 0 if gonna skip the turn
