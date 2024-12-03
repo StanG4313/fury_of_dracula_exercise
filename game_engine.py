@@ -1,12 +1,10 @@
 import datetime
 import json
 import pickle
-import sys
 
-from display import Display
-from decks import Inventory, Deck, EventsDeck, Discard
-from trail import Trail
+from decks import Deck, Discard, EventsDeck, Inventory
 from map import GameMap
+from trail import Trail
 
 default_config_path = "res/default_config.json"
 default_preset_path = "res/default_preset.json"
@@ -38,7 +36,6 @@ class GameEngine:
             with open(game_preset_file_path) as preset:
                 game_preset = json.load(preset)
 
-
         with open(default_config_path) as config:
             default_config = json.load(config)
         with open(default_preset_path) as config:
@@ -51,24 +48,42 @@ class GameEngine:
             ("situation", "starting_phase"),
             ("situation", "starting_phase"),
             ("current_influence", "current_influence"),
-            ("active_effects", "active_effects")
+            ("active_effects", "active_effects"),
         ]
 
         for attribute, key in attributes:
             setattr(self, attribute, game_preset.get(key, default_preset[key]))
 
-        self.confronts_deck = game_preset.get("confronts_deck", Deck(default_preset["confronts_deck"]))
-        self.fight_deck = game_preset.get("fight_deck", Deck(default_preset["fight_deck"]))
-        self.events_deck = game_preset.get("events_deck", EventsDeck(default_preset["events_deck"]))
-        self.items_discard = game_preset.get("items_discard", Discard(default_preset["items_discard"]))
-        self.tickets_discard = game_preset.get("tickets_discard", Discard(default_preset["tickets_discard"]))
-        self.confronts_discard = game_preset.get("confronts_discard", Discard(default_preset["confronts_discard"]))
-        self.events_discard = game_preset.get("events_discard", Discard(default_preset["events_discard"]))
+        self.confronts_deck = game_preset.get(
+            "confronts_deck", Deck(default_preset["confronts_deck"])
+        )
+        self.fight_deck = game_preset.get(
+            "fight_deck", Deck(default_preset["fight_deck"])
+        )
+        self.events_deck = game_preset.get(
+            "events_deck", EventsDeck(default_preset["events_deck"])
+        )
+        self.items_discard = game_preset.get(
+            "items_discard", Discard(default_preset["items_discard"])
+        )
+        self.tickets_discard = game_preset.get(
+            "tickets_discard", Discard(default_preset["tickets_discard"])
+        )
+        self.confronts_discard = game_preset.get(
+            "confronts_discard", Discard(default_preset["confronts_discard"])
+        )
+        self.events_discard = game_preset.get(
+            "events_discard", Discard(default_preset["events_discard"])
+        )
 
         self.show.engine_startup_with_timestamp("start", start_time)
 
-        self.items_deck = game_preset.get("items_deck", Deck(default_preset["items_deck"]))
-        self.tickets_deck = game_preset.get("tickets_deck", Deck(default_preset["tickets_deck"]))
+        self.items_deck = game_preset.get(
+            "items_deck", Deck(default_preset["items_deck"])
+        )
+        self.tickets_deck = game_preset.get(
+            "tickets_deck", Deck(default_preset["tickets_deck"])
+        )
         self.trail = game_preset.get("Trail", Trail())
 
         self.map = GameMap(game_preset.get("map", default_preset["map"]))
@@ -130,7 +145,9 @@ class GameEngine:
     def check_actions_available(self, player):
         actions = dict()
         i = 1
-        current_location = player["dynamic"]["location"] # TODO: Change to .location method when changed to player/hunter class instead of dicts
+        current_location = player["dynamic"][
+            "location"
+        ]  # TODO: Change to .location method when changed to player/hunter class instead of dicts
 
         if player["dynamic"]["dead"]:
             actions["0"] = "dead"
@@ -139,16 +156,19 @@ class GameEngine:
             actions["1"] = "rise_up"
             return actions  # TODO: check it with active effect of more then one action at day
 
-
-        if self.phase == "day": # TODO: add option of special event card for night moving
-            if len(self.map.get_locations_walk(current_location,1)) != 0:
+        if (
+            self.phase == "day"
+        ):  # TODO: add option of special event card for night moving
+            if len(self.map.get_locations_walk(current_location, 1)) != 0:
                 actions[str(i)] = "move_by_road"
                 i += 1
-            if (len(player["dynamic"]["tickets"].content) != 0 and
-                    len(self.map.get_locations_railway(current_location, 1, 1)) != 0):
+            if (
+                len(player["dynamic"]["tickets"].content) != 0
+                and len(self.map.get_locations_railway(current_location, 1, 1)) != 0
+            ):
                 actions[str(i)] = "move_by_railway"
                 i += 1
-            if len(self.map.get_locations_sea(current_location,1)):
+            if len(self.map.get_locations_sea(current_location, 1)):
                 actions[str(i)] = "move_by_sea"
                 i += 1
             if self.map.find_by_id(current_location)["type"] != "sea":
@@ -161,10 +181,16 @@ class GameEngine:
 
     def prepare_game(self):
         self.show.phrase("prepare_game")
-        hunters_spawn_available = [location for location in self.map.locations if location["type"] == "city"]
+        hunters_spawn_available = [
+            location for location in self.map.locations if location["type"] == "city"
+        ]
 
-        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
-        dracula_index = [index for index in range(len(self.players)) if index not in hunters_indexes][0]
+        hunters_indexes = [
+            i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"
+        ]
+        dracula_index = [
+            index for index in range(len(self.players)) if index not in hunters_indexes
+        ][0]
 
         confirms = [False]
 
@@ -175,10 +201,14 @@ class GameEngine:
         while not any(confirms):
             self.show.available_start_locations(hunters_spawn_available)
 
-            dracula_available_spawn_locations = [location["id"] for location in hunters_spawn_available]
+            dracula_available_spawn_locations = [
+                location["id"] for location in hunters_spawn_available
+            ]
             for index in hunters_indexes:
                 location = "undefined"
-                while location not in [str(location["id"]) for location in self.map.locations]:
+                while location not in [
+                    str(location["id"]) for location in self.map.locations
+                ]:
                     self.show.ask_player_to_choose_start_location(self.players[index])
                     location = input()
                 if int(location) in dracula_available_spawn_locations:
@@ -201,7 +231,9 @@ class GameEngine:
 
         location = None
 
-        while (self.players[dracula_index]["dynamic"]["location"]) not in dracula_available_spawn_locations:
+        while (
+            self.players[dracula_index]["dynamic"]["location"]
+        ) not in dracula_available_spawn_locations:
             self.show.ask_player_to_choose_start_location(self.players[dracula_index])
             location = input()
             if location.isdigit():
@@ -212,20 +244,20 @@ class GameEngine:
 
     def save_state(self, file_path):
         file_path = file_path + ".pkl"
-        with open(file_path, 'wb') as file:
+        with open(file_path, "wb") as file:
             pickle.dump(self, file)
         self.show.loadsave_report(file_path)
 
     def load_state(self, file_path, display):
         file_path = file_path + ".pkl"
-        with open(file_path, 'rb') as file:
+        with open(file_path, "rb") as file:
             engine = pickle.load(file)
             engine.show = display
-        self.show.loadsave_report(file_path, load = True)
+        self.show.loadsave_report(file_path, load=True)
         return engine
 
     def play_day(self):
-        self.show.phrase("play_day")  #TODO: add day, week info
+        self.show.phrase("play_day")  # TODO: add day, week info
         self.show.phrase("wanna_save")
         answer = input()
         if answer != "":
@@ -244,21 +276,29 @@ class GameEngine:
             "special": lambda: self.special(current_player),
         }
 
-        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"] # TODO: review after adding multiple hunter actions for day card
+        hunters_indexes = [
+            i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"
+        ]  # TODO: review after adding multiple hunter actions for day card
 
         if "custom_order" in self.active_effects:
-            pass # TODO: add after adding custom order active effect and event card
+            pass  # TODO: add after adding custom order active effect and event card
         else:
             for i in hunters_indexes:
                 current_player = self.players[i]
                 self.show.current_player(current_player)
                 actions_available = self.check_actions_available(current_player)
                 if actions_available.get("0") == "dead":
-                    print("No action because the player is dead") # TODO: add notification that player is dead and will be transported to the closest hospital
+                    print(
+                        "No action because the player is dead"
+                    )  # TODO: add notification that player is dead and will be transported to the closest hospital
                     continue
                 elif actions_available.get("1") == "rise_up":
-                    current_player["dynamic"]["knock_down"] = 0 # TODO: change to player class method
-                    print("The only available action for this player is to rise up") # TODO: add notification of player rising up as an action
+                    current_player["dynamic"][
+                        "knock_down"
+                    ] = 0  # TODO: change to player class method
+                    print(
+                        "The only available action for this player is to rise up"
+                    )  # TODO: add notification of player rising up as an action
                     continue  # May be different if we have more than one action for hunters at day
                 # TODO: add check active effects (bats) applied to the player (and actions following)
                 else:
@@ -268,7 +308,9 @@ class GameEngine:
                     while not result:
                         self.show.actions_available(actions_available)
                         action_chosen = input()
-                        result = actions.get(actions_available.get(action_chosen), lambda: None)()
+                        result = actions.get(
+                            actions_available.get(action_chosen), lambda: None
+                        )()
 
         self.phase = "sunset"
         return
@@ -302,8 +344,12 @@ class GameEngine:
             if new_location.isdigit() and int(new_location) in locations_available:
                 player["dynamic"]["location"] = new_location
                 # TODO: add trail check and the place for dracula reaction with event cards
-                self.show.player_moved(player, self.map.find_by_id(current_location),
-                                       self.map.find_by_id(new_location), "road")
+                self.show.player_moved(
+                    player,
+                    self.map.find_by_id(current_location),
+                    self.map.find_by_id(new_location),
+                    "road",
+                )
                 # TODO: add trail update after each move of the hunter
                 return True
 
@@ -325,23 +371,27 @@ class GameEngine:
             if new_location.isdigit() and int(new_location) in locations_available:
                 player["dynamic"]["location"] = new_location
                 # TODO: add trail check and the place for dracula reaction with event cards
-                self.show.player_moved(player, self.map.find_by_id(current_location),
-                                       self.map.find_by_id(new_location), "sea")
+                self.show.player_moved(
+                    player,
+                    self.map.find_by_id(current_location),
+                    self.map.find_by_id(new_location),
+                    "sea",
+                )
                 # TODO: add trail update after each move of the hunter
                 return True
 
     @staticmethod
     def heal(player):
-        #TODO: add request if wounds == 0, as player gonna skip the turn
+        # TODO: add request if wounds == 0, as player gonna skip the turn
 
         if player["class"] == "doc":
-            player["dynamic"]["wounds"] -=2
+            player["dynamic"]["wounds"] -= 2
         else:
             player["dynamic"]["wounds"] -= 1
 
         if player["dynamic"]["wounds"] < 0:
             player["dynamic"]["wounds"] = 0
-        print("heal") # TODO: add proper notification of heal applied
+        print("heal")  # TODO: add proper notification of heal applied
         return True
 
     def search(self, player):
@@ -367,5 +417,6 @@ class GameEngine:
     def special(self, player):
         print("special WIP")
         pass
+
 
 #  TODO: implement class for characters
