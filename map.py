@@ -4,7 +4,7 @@ import networkx as nx
 
 def _get_reachable_locations(graph, start_id, max_distance):
     paths = nx.single_source_shortest_path_length(graph, int(start_id), cutoff=max_distance)
-    return list(paths.keys())
+    return [node for node in paths.keys() if node != int(start_id)]
 
 
 class GameMap:
@@ -31,7 +31,7 @@ class GameMap:
             for nearby_id in location.get("cities_nearby", []):
                 self.graph_walk.add_edge(loc_id, nearby_id)
 
-            for sea_id in location.get("seas_nearby", []):
+            for sea_id in location.get("seas_ports_nearby", []):
                 self.graph_sea.add_edge(loc_id, sea_id)
 
             for railway_id in location.get("cities_railway_white", []):
