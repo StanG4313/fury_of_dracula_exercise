@@ -297,8 +297,24 @@ class GameEngine:
     def move_by_railway(self, player):
         pass
 
-    def move_by_sea(self, player):
-        pass
+    def move_by_sea(self, player, distance=1):
+        current_location = player["dynamic"]["location"]
+        locations_available = self.map.get_locations_sea(current_location, distance)
+        locations_full_info = list(map(self.map.find_by_id, locations_available))
+        new_location = None
+
+        while not new_location:
+            self.show.available_move_locations(locations_full_info)
+            new_location = input()
+            if new_location == "CANCEL":
+                return False
+            if new_location.isdigit() and int(new_location) in locations_available:
+                player["dynamic"]["location"] = new_location
+                # TODO: add trail check and the place for dracula reaction with event cards
+                self.show.player_moved(player, self.map.find_by_id(current_location),
+                                       self.map.find_by_id(new_location), "sea")
+                # TODO: add trail update after each move of the hunter
+                return True
 
     @staticmethod
     def heal(player):
