@@ -130,7 +130,7 @@ class GameEngine:
     def check_actions_available(self, player):
         actions = dict()
         i = 1
-        current_location = player["dynamic"]["location"] # Change to .location method when changed to player/hunter class instead of dicts
+        current_location = player["dynamic"]["location"] # TODO: Change to .location method when changed to player/hunter class instead of dicts
 
         if player["dynamic"]["dead"]:
             actions["0"] = "dead"
@@ -140,11 +140,12 @@ class GameEngine:
             return actions  # TODO: check it with active effect of more then one action at day
 
 
-        if self.phase == "day": # add option of special event card for night moving
+        if self.phase == "day": # TODO: add option of special event card for night moving
             if len(self.map.get_locations_walk(current_location,1)) != 0:
                 actions[str(i)] = "move_by_road"
                 i += 1
-            if len(player["dynamic"]["tickets"].content) != 0 and len(self.map.get_locations_railway(current_location, 1, 1)) != 0: # maybe it should be related to amount of yellow/white railways for locations and for the tickets
+            if (len(player["dynamic"]["tickets"].content) != 0 and
+                    len(self.map.get_locations_railway(current_location, 1, 1)) != 0):
                 actions[str(i)] = "move_by_railway"
                 i += 1
             if len(self.map.get_locations_sea(current_location,1)):
@@ -154,7 +155,7 @@ class GameEngine:
                 actions[str(i)] = "heal"
                 i += 1
 
-            # TODO: add actions: special action, shopping, search, use card, trade with other hunter
+            # TODO: add actions: special, shopping, search, use card, trade with other hunter
 
         return actions
 
@@ -224,7 +225,7 @@ class GameEngine:
         return engine
 
     def play_day(self):
-        self.show.phrase("play_day")
+        self.show.phrase("play_day")  #TODO: add day, week info
         self.show.phrase("wanna_save")
         answer = input()
         if answer != "":
@@ -235,29 +236,39 @@ class GameEngine:
             "move_by_railway": lambda: self.move_by_railway(current_player),
             "move_by_sea": lambda: self.move_by_sea(current_player),
             "heal": lambda: self.heal(current_player),
+            "shop": lambda: self.shop(current_player),
+            "buy_tickets": lambda: self.buy_tickets(current_player),
+            "use_card": lambda: self.use_card(current_player),
+            "trade": lambda: self.trade(current_player),
+            "special": lambda: self.special(current_player),
         }
 
-        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
+        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"] # TODO: review after adding multiple hunter actions for day card
 
         if "custom_order" in self.active_effects:
             pass # TODO: add after adding custom order active effect and event card
         else:
             for i in hunters_indexes:
                 current_player = self.players[i]
-                self.show.current_player(current_player)# say player's name (current player:)
+                self.show.current_player(current_player)
                 actions_available = self.check_actions_available(current_player)
                 if actions_available.get("0") == "dead":
+                    print("No action because the player is dead") # TODO: add notification that player is dead and will be transported to the closest hospital
                     continue
                 elif actions_available.get("1") == "rise_up":
                     current_player["dynamic"]["knock_down"] = 0 # TODO: change to player class method
+                    print("The only available action for this player is to rise up") # TODO: add notification of player rising up as an action
+                    continue  # May be different if we have more than one action for hunters at day
+                # TODO: add check active effects (bats) applied to the player (and actions following)
                 else:
+                    # TODO: add public and private info output
                     result = None
 
                     while not result:
                         self.show.actions_available(actions_available)
                         action_chosen = input()
                         result = actions.get(actions_available.get(action_chosen), lambda: None)()
-                    #TODO: app phrase about action executed
+
         self.phase = "sunset"
         return
 
@@ -279,7 +290,7 @@ class GameEngine:
     def move_by_road(self, player, distance=1):
         current_location = player["dynamic"]["location"]
         locations_available = self.map.get_locations_walk(current_location, distance)
-        locations_full_info = list(map(self.map.find_by_id, self.map.get_locations_walk(current_location, distance)))
+        locations_full_info = list(map(self.map.find_by_id, locations_available))
         new_location = None
 
         while not new_location:
@@ -290,11 +301,13 @@ class GameEngine:
             if new_location.isdigit() and int(new_location) in locations_available:
                 player["dynamic"]["location"] = new_location
                 # TODO: add trail check and the place for dracula reaction with event cards
-                self.show.player_moved(player, self.map.find_by_id(current_location), self.map.find_by_id(new_location), "road")
+                self.show.player_moved(player, self.map.find_by_id(current_location),
+                                       self.map.find_by_id(new_location), "road")
                 # TODO: add trail update after each move of the hunter
                 return True
 
     def move_by_railway(self, player):
+        print("move_railway WIP")
         pass
 
     def move_by_sea(self, player, distance=1):
@@ -318,7 +331,7 @@ class GameEngine:
 
     @staticmethod
     def heal(player):
-        #TODO: add request if wounds == 0 if gonna skip the turn
+        #TODO: add request if wounds == 0, as player gonna skip the turn
 
         if player["class"] == "doc":
             player["dynamic"]["wounds"] -=2
@@ -327,7 +340,27 @@ class GameEngine:
 
         if player["dynamic"]["wounds"] < 0:
             player["dynamic"]["wounds"] = 0
-
+        print("heal") # TODO: add proper notification of heal applied
         return True
 
-#  TODO: implement classes for: map, character
+    def shop(self, player):
+        print("shop WIP")
+        pass
+
+    def buy_tickets(self, player):
+        print("buy_tickets WIP")
+        pass
+
+    def use_card(self, player):
+        print("use_card WIP")
+        pass
+
+    def trade(self, player):
+        print("trade WIP")
+        pass
+
+    def special(self, player):
+        print("special WIP")
+        pass
+
+#  TODO: implement class for characters

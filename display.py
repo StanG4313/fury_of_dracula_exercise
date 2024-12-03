@@ -236,12 +236,12 @@ class Display:
     def player_moved(self, player, move_from, move_to, way_of_transportation):
         how = {
             "RU": {
-                "road" : "по дороге",
-                "sea" : "по морю"
+                "road" : "(по дороге)",
+                "sea" : "(по морю)"
             },
             "EN": {
-                "road": "using roads",
-                "sea": "по морю"
+                "road": "(using roads)",
+                "sea": "(using seas)"
             }
         }
 
