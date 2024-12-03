@@ -107,10 +107,10 @@ class Display:
 
     def effect_error(self, effect):
         phrase = {
-                "EN": "Effect " + effect + " from preset active_effects field is not in available effects in config.",
-                "RU": "Эффект " + effect +
-                      " из поля active_effects в пресете недоступен согласно конфигурационному файлу."
-            }
+            "EN": "Effect " + effect + " from preset active_effects field is not in available effects in config.",
+            "RU": "Эффект " + effect +
+                  " из поля active_effects в пресете недоступен согласно конфигурационному файлу."
+        }
 
         print(phrase[self.language])
 
@@ -179,7 +179,8 @@ class Display:
         print(hunter[name[self.language]], phrase[self.language])
 
     def loadsave_report(self, file, load=False):
-        process = {"EN": "loaded from file", "RU": "загружено из файла"} if load else {"EN": "saved to file", "RU": "сохранено в файл"}
+        process = {"EN": "loaded from file", "RU": "загружено из файла"} if load else {"EN": "saved to file",
+                                                                                       "RU": "сохранено в файл"}
         phrase = {"EN": "Game state", "RU": "Состояние игры"}
         print(phrase[self.language], process[self.language], file)
 
@@ -187,6 +188,7 @@ class Display:
         name = {"EN": "name_en", "RU": "name_ru"}
         phrase = {"EN": "Current player:",
                   "RU": "Текущий игрок:"}
+        print()
         print(phrase[self.language], player[name[self.language]], )
 
     def actions_available(self, actions_dict):
@@ -196,12 +198,11 @@ class Display:
             "RU": "Выберите действие"
         }
         action_names = {
-                        "move_by_road": {"EN": "Move using roads", "RU": "Передвинуться по дороге"},
-                        "move_by_railway": {"EN": "Move using railroads", "RU": "Передвинуться по железной дороге"},
-                        "move_by_sea": {"EN": "Move across the sea", "RU": "Передвинутсья по морю"},
-                        "heal": {"EN": "Rest & heal", "RU": "Отдых и исцеление"}
+            "move_by_road": {"EN": "Move using roads", "RU": "Передвинуться по дороге"},
+            "move_by_railway": {"EN": "Move using railroads", "RU": "Передвинуться по железной дороге"},
+            "move_by_sea": {"EN": "Move across the sea", "RU": "Передвинутсья по морю"},
+            "heal": {"EN": "Rest & heal", "RU": "Отдых и исцеление"}
         }
-
 
         print()
         print(phrase[self.language])

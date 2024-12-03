@@ -230,7 +230,15 @@ class GameEngine:
         if answer != "":
             self.save_state(answer)
 
+        actions = {
+            "move_by_road": lambda: self.move_by_road(current_player),
+            "move_by_railway": lambda: self.move_by_railway(current_player),
+            "move_by_sea": lambda: self.move_by_sea(current_player),
+            "heal": lambda: self.heal(current_player),
+        }
+
         hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
+
         if "custom_order" in self.active_effects:
             pass # TODO: add after adding custom order active effect and event card
         else:
@@ -238,29 +246,17 @@ class GameEngine:
                 current_player = self.players[i]
                 self.show.current_player(current_player)# say player's name (current player:)
                 actions_available = self.check_actions_available(current_player)
-                self.show.actions_available(actions_available)
                 if actions_available.get("0") == "dead":
                     continue
                 elif actions_available.get("1") == "rise_up":
                     current_player["dynamic"]["knock_down"] = 0 # TODO: change to player class method
                 else:
-                    action_chosen = None
-                    while action_chosen not in actions_available.keys():
-                        action_chosen = input()
-
-                    actions = {
-                        "move_by_road": self.move_by_road(current_player),
-                        "move_by_railway": self.move_by_railway(current_player),
-                        "move_by_sea": self.move_by_sea(current_player),
-                        "heal": self.heal(current_player)
-                    }
-
-                    result = actions.get(actions_available.get(action_chosen))
+                    result = None
 
                     while not result:
                         self.show.actions_available(actions_available)
                         action_chosen = input()
-                        result = actions.get(actions_available.get(action_chosen))
+                        result = actions.get(actions_available.get(action_chosen), lambda: None)()
                     #TODO: app phrase about action executed
         self.phase = "sunset"
         return
