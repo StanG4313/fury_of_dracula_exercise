@@ -155,7 +155,7 @@ class GameEngine:
                 actions[str(i)] = "heal"
                 i += 1
 
-            # TODO: add actions: special, shopping, search, use card, trade with other hunter
+            # TODO: add actions: special, shopping, search, buy tickets, use card, trade with other hunter
 
         return actions
 
@@ -235,6 +235,7 @@ class GameEngine:
             "move_by_road": lambda: self.move_by_road(current_player),
             "move_by_railway": lambda: self.move_by_railway(current_player),
             "move_by_sea": lambda: self.move_by_sea(current_player),
+            "search": lambda: self.search(current_player),
             "heal": lambda: self.heal(current_player),
             "shop": lambda: self.shop(current_player),
             "buy_tickets": lambda: self.buy_tickets(current_player),
@@ -342,6 +343,10 @@ class GameEngine:
             player["dynamic"]["wounds"] = 0
         print("heal") # TODO: add proper notification of heal applied
         return True
+
+    def search(self, player):
+        print("search WIP")
+        pass
 
     def shop(self, player):
         print("shop WIP")
