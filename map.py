@@ -3,13 +3,15 @@ import networkx as nx
 
 
 def _get_reachable_locations(graph, start_id, max_distance):
-    paths = nx.single_source_shortest_path_length(graph, int(start_id), cutoff=max_distance)
+    paths = nx.single_source_shortest_path_length(
+        graph, int(start_id), cutoff=max_distance
+    )
     return [node for node in paths.keys() if node != int(start_id)]
 
 
 class GameMap:
     def __init__(self, json_file_path):
-        with open(json_file_path, 'r', encoding='utf-8') as file:
+        with open(json_file_path, "r", encoding="utf-8") as file:
             self.locations = json.load(file)
 
         self.graph_walk = nx.Graph()

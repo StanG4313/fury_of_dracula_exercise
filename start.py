@@ -1,7 +1,8 @@
 import sys
 
-from game_engine import GameEngine
 from display import Display
+from game_engine import GameEngine
+
 
 def run_main_game_process(config_file_path=None, game_preset_path=None, lang="EN"):
     display = Display(lang)
