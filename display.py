@@ -133,37 +133,61 @@ class Display:
             print(players[index][name[self.language]], ": ", players[index]["dynamic"]["location"], sep="")
         print()
 
+    def describe_locations_list(self, locations):
+        for location in locations:
+            key = {
+                "EN": "title_en",
+                "RU": "title_ru"
+            }
+            if location["type"] == "city":
+                if self.language == "EN":
+                    small = "small"
+                    big = "big"
+                    filler = ", size: "
+
+                elif self.language == "RU":
+                    small = "малый"
+                    big = "большой"
+                    filler = ", размер: "
+
+                else:  # in case of adding any other language
+                    small = "small"
+                    big = "big"
+                    key = "title_en"
+                    filler = ", size: "
+
+                if location["big"]:
+                    size = big
+                else:
+                    size = small
+
+                print(location["id"], ") ", location[key.get(self.language, "EN")], filler, size, sep="")
+
+            elif location["type"] == "hospital":
+                continue
+
+            else:  # Seas and Dracula castle
+                print(location["id"], ") ", location[key.get(self.language, "EN")], sep="")
+
+    def available_move_locations(self, locations_available):
+        print()
+        phrase = {
+            "RU": ["Доступные локации:", 'Укажите новую локацию, или введите "CANCEL" чтобы вернуться в предыдущее меню'],
+            "EN": ["Available locations:", 'Specify a new location, or enter "CANCEL" to return to the previous menu']
+        }
+        print(phrase[self.language][0])
+        self.describe_locations_list(locations_available)
+        print()
+        print(phrase[self.language][1])
+
     def available_start_locations(self, hunters_spawn_available):
         print()
-
-        if self.language == "EN":
-            small = "small"
-            big = "big"
-            key = "title_en"
-            filler = ", size: "
-            print("Available start locations:")
-
-        elif self.language == "RU":
-            small = "малый"
-            big = "большой"
-            key = "title_ru"
-            filler = ", размер: "
-            print("Доступные для старта локации:")
-
-        else:  # in case of adding any other language
-            small = "small"
-            big = "big"
-            key = "title_en"
-            filler = ", size: "
-            print("Available start locations:")
-
-        for city in hunters_spawn_available:
-            if city["big"]:
-                size = big
-            else:
-                size = small
-
-            print(city["id"], ") ", city[key], filler, size, sep="")
+        phrase = {
+            "RU": "Доступные для старта локации:",
+            "EN": "Available start locations:"
+        }
+        print(phrase[self.language])
+        self.describe_locations_list(hunters_spawn_available)
         print()
 
     def ask_player_to_choose_start_location(self, hunter):
@@ -208,3 +232,20 @@ class Display:
         print(phrase[self.language])
         for key in actions_dict.keys():
             print(key, ": ", action_names[actions_dict[key]][self.language], sep="")
+
+    def player_moved(self, player, move_from, move_to, way_of_transportation):
+        how = {
+            "RU": {
+                "road" : "по дороге"
+            },
+            "EN": {
+                "road": "using roads"
+            }
+        }
+
+        if self.language == "RU":
+            print("Игрок", player["name_ru"], "перемещён из", move_from.get("title_ru", "госпиталя"), "в",
+                  move_to["title_ru"], how["RU"][way_of_transportation], "успешно")
+        else:
+            print("Player", player["name_en"], "moved from", move_from.get("title_en", "hospital"), "to",
+                  move_to["title_en"], how["EN"][way_of_transportation], "successfully")
