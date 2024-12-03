@@ -47,7 +47,7 @@ class Discard(BaseDeck):
 
     def take_by_id(self, element_id):
         for i, element in enumerate(self.content):
-            if element.get('id') == element_id:
+            if element.get("id") == element_id:
                 return self.content.pop(i)
         return None
 

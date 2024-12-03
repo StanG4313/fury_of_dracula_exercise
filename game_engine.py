@@ -1,12 +1,10 @@
 import datetime
 import json
 import pickle
-import sys
 
-from display import Display
-from decks import Inventory, Deck, EventsDeck, Discard
-from trail import Trail
+from decks import Deck, Discard, EventsDeck, Inventory
 from map import GameMap
+from trail import Trail
 
 default_config_path = "res/default_config.json"
 default_preset_path = "res/default_preset.json"
