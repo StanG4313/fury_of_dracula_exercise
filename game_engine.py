@@ -199,6 +199,8 @@ class GameEngine:
 
         self.show.current_hunters_position(self.players, hunters_indexes, final=True)
 
+        self.players[dracula_index]["dynamic"]["combat_cards"].add([self.confronts_deck.take_first() for _ in range(5)])
+
         location = None
 
         while (self.players[dracula_index]["dynamic"]["location"]) not in dracula_available_spawn_locations:
