@@ -93,7 +93,6 @@ class Trail:
             return False
 
     def open_city_by_number_in_trail(self, number_in_trail):
-        pass  # TODO
         self.trail[number_in_trail]["city_disclosed"] = True
         self.update_hunters_view()
         return
