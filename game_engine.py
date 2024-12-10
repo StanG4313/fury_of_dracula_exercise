@@ -476,8 +476,8 @@ class GameEngine:
             card_chosen = dracula["dynamic"]["combat_cards"].take_by_id(id_chosen)
             activation_card = self.trail.add_new_trail_item(dracula["dynamic"]["location"], self.get_hunters_locations(), card_chosen)
 
-            if len(dracula["dynamic"]["combat_cards"].contents) < 5:
-                dracula["dynamic"]["combat_cards"].add(self.confronts_deck.take_first())
+            if len(dracula["dynamic"]["combat_cards"].content) < 5:
+                dracula["dynamic"]["combat_cards"].add([self.confronts_deck.take_first()])
                 print("Dracula took card")
 
         if activation_card:
