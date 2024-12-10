@@ -317,8 +317,33 @@ class GameEngine:
         return True
 
     def search(self, player):
-        print("search WIP")
-        pass
+        # TODO: add usage of items
+        current_location = player["dynamic"]["location"]
+        card_disclosed, combat_card = self.trail.disclose_combat_card(current_location)
+        if card_disclosed:
+            print("Card disclosed:", combat_card)
+        result = self.try_to_clean_city(player, combat_card)
+
+        if result:
+            print("Card", combat_card, "cleaned successfully")
+        else:
+            print("Failure")
+        return True
+
+    def try_to_clean_city(self, player, card):
+        print("City_clean_WIP")
+        current_location = player["dynamic"]["location"]
+        print("Will this hunter succeed at location cleaning?")
+        result = None
+
+        while result not in ["Y", "N"]:
+            result = input('Enter "Y" if yes, and "N" if no \n').upper()
+
+        if result == "Y":
+            self.trail.clean_combat_card(current_location)
+            return True
+        else:
+            return False
 
     def shop(self, player):
         print("shop WIP")
