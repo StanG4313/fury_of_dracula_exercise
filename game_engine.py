@@ -433,4 +433,37 @@ class GameEngine:
                         action_chosen = input()
                         result = actions.get(actions_available.get(action_chosen), lambda: None)()
 
+    def dracula_act(self):
+        print("Dracula phase")
+        print(self.show.public_info)
+        for cell in self.trail.trail:
+            print(cell, self.trail.trail[cell])
+
+        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
+        dracula = self.players[[index for index in range(len(self.players)) if index not in hunters_indexes][0]]
+
+        self.show.current_hunters_position(self.players, hunters_indexes)
+        for card in dracula["dynamic"]["combat_cards"].content:
+            print(card)
+
+        self.move_by_road(dracula) # TODO: add inability for Dracula to go to the city from trail again
+
+        activation_card = None
+
+        if dracula["dynamic"]["location"] in self.get_hunters_locations():
+            activation_card = self.trail.add_new_trail_item(dracula["dynamic"]["location"], self.get_hunters_locations())
+
+        else:
+            id_chosen = input("Specify ID of the card you want to place to your new location: \n")
+            card_chosen = dracula["dynamic"]["combat_cards"].take_by_id(id_chosen)
+            activation_card = self.trail.add_new_trail_item(dracula["dynamic"]["location"], self.get_hunters_locations(), card_chosen)
+
+            if len(dracula["dynamic"]["combat_cards"].contents) < 5:
+                dracula["dynamic"]["combat_cards"].add(self.confronts_deck.take_first())
+                print("Dracula took card")
+
+        if activation_card:
+            self.card_apply_effect(activation_card)
+
+        return
 #  TODO: implement class for characters
