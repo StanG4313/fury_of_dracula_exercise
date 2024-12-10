@@ -240,44 +240,7 @@ class GameEngine:
         if answer != "":
             self.save_state(answer)
 
-        actions = {
-            "move_by_road": lambda: self.move_by_road(current_player),
-            "move_by_railway": lambda: self.move_by_railway(current_player),
-            "move_by_sea": lambda: self.move_by_sea(current_player),
-            "search": lambda: self.search(current_player),
-            "heal": lambda: self.heal(current_player),
-            "shop": lambda: self.shop(current_player),
-            "buy_tickets": lambda: self.buy_tickets(current_player),
-            "use_card": lambda: self.use_card(current_player),
-            "trade": lambda: self.trade(current_player),
-            "special": lambda: self.special(current_player),
-        }
-
-        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"] # TODO: review after adding multiple hunter actions for day card
-
-        if "custom_order" in self.active_effects:
-            pass # TODO: add after adding custom order active effect and event card
-        else:
-            for i in hunters_indexes:
-                current_player = self.players[i]
-                self.show.current_player(current_player)
-                actions_available = self.check_actions_available(current_player)
-                if actions_available.get("0") == "dead":
-                    print("No action because the player is dead") # TODO: add notification that player is dead and will be transported to the closest hospital
-                    continue
-                elif actions_available.get("1") == "rise_up":
-                    current_player["dynamic"]["knock_down"] = 0 # TODO: change to player class method
-                    print("The only available action for this player is to rise up") # TODO: add notification of player rising up as an action
-                    continue  # May be different if we have more than one action for hunters at day
-                # TODO: add check active effects (bats) applied to the player (and actions following)
-                else:
-                    # TODO: add public and private info output
-                    result = None
-
-                    while not result:
-                        self.show.actions_available(actions_available)
-                        action_chosen = input()
-                        result = actions.get(actions_available.get(action_chosen), lambda: None)()
+        self.hunters_act() #TODO: add condition of dracula event card with no hunter actions next day
 
         self.phase = "sunset"
         return
@@ -376,5 +339,53 @@ class GameEngine:
     def special(self, player):
         print("special WIP")
         pass
+
+    def hunters_act(self):
+
+        actions = {
+            "move_by_road": lambda: self.move_by_road(current_player),
+            "move_by_railway": lambda: self.move_by_railway(current_player),
+            "move_by_sea": lambda: self.move_by_sea(current_player),
+            "search": lambda: self.search(current_player),
+            "heal": lambda: self.heal(current_player),
+            "shop": lambda: self.shop(current_player),
+            "buy_tickets": lambda: self.buy_tickets(current_player),
+            "use_card": lambda: self.use_card(current_player),
+            "trade": lambda: self.trade(current_player),
+            "special": lambda: self.special(current_player),
+        }
+
+        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]  # TODO: review after adding multiple hunter actions for day card
+
+        if "custom_order" in self.active_effects:
+            pass  # TODO: add after adding custom order active effect and event card
+        else:
+            for i in hunters_indexes:
+                current_player = self.players[i]
+                self.show.current_player(current_player)
+                actions_available = self.check_actions_available(current_player)
+                if actions_available.get("0") == "dead":
+                    print(
+                        "No action because the player is dead")  # TODO: add notification that player is dead and will be transported to the closest hospital
+                    continue
+                elif actions_available.get("1") == "rise_up":
+                    current_player["dynamic"]["knock_down"] = 0  # TODO: change to player class method
+                    print("The only available action for this player is to rise up")  # TODO: add notification of player rising up as an action
+                    continue  # May be different if we have more than one action for hunters at day
+                # TODO: add check active effects (bats) applied to the player (and actions following)
+                # TODO: add turn skip if player located at the sea at night
+                elif len(actions_available) == 0:
+                    print("Turn skipped (no actions available, dunno why ¯\\_(ツ)_/¯)")
+                    continue
+                    # TODO: add public and private info output
+                else:
+                    result = None
+
+                    while not result:
+                        self.show.public_info(self)
+                        self.show.private_info(current_player)
+                        self.show.actions_available(actions_available)
+                        action_chosen = input()
+                        result = actions.get(actions_available.get(action_chosen), lambda: None)()
 
 #  TODO: implement class for characters
