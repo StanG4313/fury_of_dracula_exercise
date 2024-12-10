@@ -184,7 +184,7 @@ class GameEngine:
 
             dracula_available_spawn_locations = [location["id"] for location in hunters_spawn_available]
             for index in hunters_indexes:
-                location = "undefined"
+                location = None
                 while location not in [str(location["id"]) for location in self.map.locations]:
                     self.show.ask_player_to_choose_start_location(self.players[index])
                     location = input()
