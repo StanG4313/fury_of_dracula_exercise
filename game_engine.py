@@ -247,6 +247,10 @@ class GameEngine:
 
     def play_sunset(self):
         self.show.phrase("play_sunset")
+
+        self.hunters_cards()
+        self.fight_with_dracula_check()
+
         self.phase = "night"
         return
 
@@ -267,6 +271,9 @@ class GameEngine:
     def play_sunrise(self):
         self.show.phrase("play_sunrise")
         self.show.public_info(self)
+
+        self.hunters_cards()
+        self.fight_with_dracula_check()
 
         print('Type "EXIT" to stop the game')
         if input() == "EXIT":
@@ -384,6 +391,18 @@ class GameEngine:
         print("special WIP")
         pass
 
+    def hunters_cards(self):
+        print("Moment for hunters to activate their event cards (sunrise/sunset) WIP") # TODO: add after adding event cards with corresponding use time
+        pass
+
+    def fight_with_dracula_check(self):
+        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
+        dracula = self.players[[index for index in range(len(self.players)) if index not in hunters_indexes][0]]
+
+        if dracula["dynamic"]["location"] in self.get_hunters_locations():
+            print("Dracula gonna fight with some hunter(s)")
+
+
     def hunters_act(self):
 
         actions = {
@@ -464,5 +483,14 @@ class GameEngine:
         if activation_card:
             self.card_apply_effect(activation_card)
 
+        return
+
+    def get_hunters_locations(self):
+        locations = [player["dynamic"]["location"] for player in self.players if player["class"] != "dracula"]
+
+        return locations
+
+    def card_apply_effect(self, card):
+        print("Card activation effect applied WIP")
         return
 #  TODO: implement class for characters
