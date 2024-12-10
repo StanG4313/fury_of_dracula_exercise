@@ -225,7 +225,8 @@ class Display:
             "move_by_road": {"EN": "Move using roads", "RU": "Передвинуться по дороге"},
             "move_by_railway": {"EN": "Move using railroads", "RU": "Передвинуться по железной дороге"},
             "move_by_sea": {"EN": "Move across the sea", "RU": "Передвинутсья по морю"},
-            "heal": {"EN": "Rest & heal", "RU": "Отдых и исцеление"}
+            "heal": {"EN": "Rest & heal", "RU": "Отдых и исцеление"},
+            "search": {"EN": "Location search", "RU": "Обыск локации"},
         }
 
         print()
