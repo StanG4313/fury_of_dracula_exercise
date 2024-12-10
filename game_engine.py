@@ -156,7 +156,13 @@ class GameEngine:
                 actions[str(i)] = "heal"
                 i += 1
 
-            # TODO: add actions: special, shopping, search, buy tickets, use card, trade with other hunter
+            if self.trail.check_if_city_in_trail(current_location) and self.trail.check_if_trail_city_has_combat_card(current_location):
+                actions[str(i)] = "search"
+                i += 1
+
+            # if current location in cities_in_trail and confronts_card not empty -> search action available
+
+            # TODO: add actions: special, shopping, buy tickets, use card, trade with other hunter
 
         return actions
 
