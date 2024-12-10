@@ -216,7 +216,7 @@ class GameEngine:
             if location.isdigit():
                 self.players[dracula_index]["dynamic"]["location"] = int(location)
 
-        self.trail.add_new_trail_item(location)
+        self.trail.add_new_trail_item(location, self.get_hunters_locations())
         self.phase = "day"
 
     def save_state(self, file_path):
