@@ -140,17 +140,18 @@ class GameEngine:
             return actions  # TODO: check it with active effect of more then one action at day
 
 
-        if self.phase == "day": # TODO: add option of special event card for night moving
-            if len(self.map.get_locations_walk(current_location,1)) != 0:
-                actions[str(i)] = "move_by_road"
-                i += 1
-            if (len(player["dynamic"]["tickets"].content) != 0 and
-                    len(self.map.get_locations_railway(current_location, 1, 1)) != 0):
-                actions[str(i)] = "move_by_railway"
-                i += 1
-            if len(self.map.get_locations_sea(current_location,1)):
-                actions[str(i)] = "move_by_sea"
-                i += 1
+        if self.phase in ["day", "night"]:
+            if self.phase == "day" or False:  # TODO: add option of special event card for night moving
+                if len(self.map.get_locations_walk(current_location,1)) != 0:
+                    actions[str(i)] = "move_by_road"
+                    i += 1
+                if (len(player["dynamic"]["tickets"].content) != 0 and
+                        len(self.map.get_locations_railway(current_location, 1, 1)) != 0):
+                    actions[str(i)] = "move_by_railway"
+                    i += 1
+                if len(self.map.get_locations_sea(current_location,1)):
+                    actions[str(i)] = "move_by_sea"
+                    i += 1
             if self.map.find_by_id(current_location)["type"] != "sea":
                 actions[str(i)] = "heal"
                 i += 1
