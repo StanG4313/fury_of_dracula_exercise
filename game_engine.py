@@ -252,6 +252,15 @@ class GameEngine:
 
     def play_night(self):
         self.show.phrase("play_night")
+
+        self.show.phrase("wanna_save")
+        answer = input()
+        if answer != "":
+            self.save_state(answer)
+
+        self.hunters_act()
+        self.dracula_act() # TODO: add active effect for playing Dracula phase once again because of event card
+
         self.phase = "sunrise"
         return
 
@@ -276,6 +285,10 @@ class GameEngine:
                 # TODO: add trail check and the place for dracula reaction with event cards
                 self.show.player_moved(player, self.map.find_by_id(current_location),
                                        self.map.find_by_id(new_location), "road")
+                if self.trail.check_if_city_in_trail(new_location):
+                    self.trail.disclose_city_in_trail(new_location)
+                    print("City", new_location, "open in trail!") # TODO: at the position?
+                    # TODO: if there are confront card at the city in trail, ask if it will be an ambush?
                 # TODO: add trail update after each move of the hunter
                 return True
 
