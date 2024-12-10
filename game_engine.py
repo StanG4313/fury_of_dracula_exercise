@@ -266,7 +266,6 @@ class GameEngine:
 
     def play_sunrise(self):
         self.show.phrase("play_sunrise")
-        self.phase = "end"
         self.show.public_info(self)
 
         print('Type "EXIT" to stop the game')
