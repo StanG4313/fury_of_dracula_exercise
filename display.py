@@ -252,3 +252,11 @@ class Display:
         else:
             print("Player", player["name_en"], "moved from", move_from.get("title_en", "hospital"), "to",
                   move_to["title_en"], how["EN"][way_of_transportation], "successfully")
+
+    @staticmethod
+    def public_info(engine):
+        pass
+
+    @staticmethod
+    def private_info(player):
+        pass
