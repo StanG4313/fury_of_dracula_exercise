@@ -164,9 +164,12 @@ class GameEngine:
                 actions[str(i)] = "shop"
                 i += 1
 
-            # if current location in cities_in_trail and confronts_card not empty -> search action available
+                if self.map.find_by_id(current_location)["type"] != "hospital":
+                    actions[str(i)] = "buy_tickets"
+                    i += 1
 
-            # TODO: add actions: special, shopping, buy tickets, use card, trade with other hunter
+
+            # TODO: add actions: special, use card, trade with other hunter
 
         return actions
 
@@ -412,8 +415,32 @@ class GameEngine:
         return True
 
     def buy_tickets(self, player):
-        print("buy_tickets WIP")
-        pass
+        stop = False
+        second = False
+
+        while not stop:
+            if player["dynamic"]["tickets"].get_items_amount() >= 2:
+                for ticket in player["dynamic"]["tickets"].content:
+                    print(ticket)
+
+                print("choose which one to discard (specify it's ID):")
+                ticket_id = input()
+                self.tickets_discard.add([player["dynamic"]["tickets"].take_by_id(ticket_id)])
+                print("Ticket with ID", ticket_id, "discarded")
+
+            player["dynamic"]["tickets"].add([self.tickets_deck.take_first()])
+            print("Ticket added to player's inventory")
+            stop = True
+
+            if player["class"] == "lord":
+                if not second:
+                    print('Would you like to buy another ticket? Enter "Y" if yes')
+
+                    if input().upper() == "Y":
+                        stop = False
+                        second = True
+
+        return True
 
     def use_card(self, player):
         print("use_card WIP")

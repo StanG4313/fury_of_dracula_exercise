@@ -228,6 +228,7 @@ class Display:
             "heal": {"EN": "Rest & heal", "RU": "Отдых и исцеление"},
             "search": {"EN": "Location search", "RU": "Обыск локации"},
             "shop": {"EN": "Shop", "RU": "Снаряжение"},
+            "buy_tickets": {"EN": "Buy tickets", "RU": "Купить билет"},
         }
 
         print()
