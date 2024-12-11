@@ -227,6 +227,7 @@ class Display:
             "move_by_sea": {"EN": "Move across the sea", "RU": "Передвинутсья по морю"},
             "heal": {"EN": "Rest & heal", "RU": "Отдых и исцеление"},
             "search": {"EN": "Location search", "RU": "Обыск локации"},
+            "shop": {"EN": "Shop", "RU": "Снаряжение"},
         }
 
         print()

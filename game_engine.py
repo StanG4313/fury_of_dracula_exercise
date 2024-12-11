@@ -160,6 +160,10 @@ class GameEngine:
                 actions[str(i)] = "search"
                 i += 1
 
+            if self.map.find_by_id(current_location)["type"] in ["city", "hospital"]:
+                actions[str(i)] = "shop"
+                i += 1
+
             # if current location in cities_in_trail and confronts_card not empty -> search action available
 
             # TODO: add actions: special, shopping, buy tickets, use card, trade with other hunter
@@ -372,8 +376,40 @@ class GameEngine:
             return False
 
     def shop(self, player):
-        print("shop WIP")
-        pass
+        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
+        dracula = self.players[[index for index in range(len(self.players)) if index not in hunters_indexes][0]]
+        current_location = player["dynamic"]["location"]
+        night = self.phase == "night"
+
+        if night:
+            print("At night you will take the event card from below of the deck, and Dracula card will go to it's hand. Are you sure?")
+            if input('Enter "Y" to confirm/n').upper() != "Y":
+                return False
+
+            card_taken = self.events_deck.take_last()
+
+            if card_taken["for_dracula"]:
+                dracula["dynamic"]["event_cards"].add([card_taken])
+                print("Dracula got an event card")
+
+        else:
+            card_taken = self.events_deck.take_first()
+
+            if card_taken["for_dracula"]:
+                self.events_discard.add([card_taken])
+                print("Dracula card goes to discard")
+
+        items_amount = 2 if player["class"] == "lord" else 1
+
+        if self.map.find_by_id(current_location)["big"]:
+            player["dynamic"]["item_cards"].add([self.items_deck.take_first() for _ in range(items_amount)])  # TODO: check how it works if lord takes two cards, but there is only one left
+            print(items_amount, "item(s) added to player's inventory")
+
+        if not card_taken["for_dracula"]:
+            player["dynamic"]["event_cards"].add([card_taken])
+            print("Event card added to player's inventory")
+
+        return True
 
     def buy_tickets(self, player):
         print("buy_tickets WIP")
