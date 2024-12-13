@@ -192,7 +192,7 @@ class Display:
         name = {"EN": "name_en", "RU": "name_ru"}
         phrase = {"EN": ", please, specify spawn location NUMBER from available:",
                   "RU": ", пожалуйста, укажите НОМЕР стартовой локации из числа доступных:"}
-        print(hunter[name[self.language]], phrase[self.language], sep="")
+        print(hunter.__getattribute__(name[self.language]), phrase[self.language], sep="")
 
     def ask_hunter_to_confirm_readiness(self, hunter):
         name = {"EN": "name_en", "RU": "name_ru"}
