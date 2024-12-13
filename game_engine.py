@@ -219,13 +219,13 @@ class GameEngine:
         self.phase = "day"
 
     def save_state(self, file_path):
-        file_path = file_path + ".pkl"
+        file_path = "saves/" + file_path + ".pkl"
         with open(file_path, 'wb') as file:
             pickle.dump(self, file)
         self.show.loadsave_report(file_path)
 
     def load_state(self, file_path, display):
-        file_path = file_path + ".pkl"
+        file_path = "saves/" + file_path + ".pkl"
         with open(file_path, 'rb') as file:
             engine = pickle.load(file)
             engine.show = display
