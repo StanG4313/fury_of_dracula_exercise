@@ -368,6 +368,8 @@ class GameEngine:
 
     def shop(self, player):
         night = self.phase == "night"
+        extra_events = list()
+        extra_items = list()
 
         if night:
             print("At night you will take the event card from below of the deck, and Dracula card will go to it's hand. Are you sure?")
@@ -377,25 +379,32 @@ class GameEngine:
             card_taken = self.events_deck.take_last()
 
             if card_taken["for_dracula"]:
-                self.dracula.event_cards.add([card_taken])
+                extra_events.extend(self.dracula.get_event_card(card_taken))
                 print("Dracula got an event card")
+
+            else:
+                extra_events.extend(player.get_event_card(card_taken))
 
         else:
             card_taken = self.events_deck.take_first()
 
             if card_taken["for_dracula"]:
-                self.events_discard.add([card_taken])
+                extra_events.append(card_taken)
                 print("Dracula card goes to discard")
+
+            else:
+                extra_events.extend(player.get_event_card(card_taken))
+                print("Event card added to player's inventory")
 
         items_amount = 2 if player.player_class == "lord" else 1
 
         if self.map.find_by_id(player.location)["big"]:
-            player.item_cards.add([self.items_deck.take_first() for _ in range(items_amount)])  # TODO: check how it works if lord takes two cards, but there is only one left
+
+            extra_items.append(player.get_item_card(self.items_deck.take_first, items_amount))  # TODO: check how it works if lord takes two cards, but there is only one left
             print(items_amount, "item(s) added to player's inventory")
 
-        if not card_taken["for_dracula"]:
-            player.item_cards.add([card_taken])
-            print("Event card added to player's inventory")
+        self.events_discard.add(extra_events)
+        self.items_discard.add(extra_items)
 
         return True
 
@@ -463,7 +472,7 @@ class GameEngine:
             "special": lambda: self.special(hunter),
         }
 
-        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]  # TODO: review after adding multiple hunter actions for day card
+        # TODO: review after adding multiple hunter actions for day card
 
         if "custom_order" in self.active_effects:
             pass  # TODO: add after adding custom order active effect and event card
@@ -531,3 +540,4 @@ class GameEngine:
         print("Card activation effect applied WIP")
         return
 #  TODO: implement class for characters
+#  TODO: unify confront/combat cards, check if fight/battle cards unified

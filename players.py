@@ -4,7 +4,7 @@ from decks import Inventory
 class Player:
     def __init__(self, params):
         self.id = params["id"]
-        self.player_class = params["id"]
+        self.player_class = params["class"]
         self.name_ru = params["name_ru"]
         self.name_en = params["name_en"]
         self.max_wounds = params["max_wounds"]
@@ -19,6 +19,24 @@ class Player:
 
     def check_if_dead(self):
         return self.wounds >= self.max_wounds
+
+    def get_event_card(self, card) -> list:
+        self.event_cards.add([card])
+
+        return self.check_inventory_overload(self.event_cards, self.max_events)
+
+
+    @staticmethod
+    def check_inventory_overload(invent: Inventory, max_amount: int()) -> list:
+        items_to_discard = list()
+
+        while invent.get_items_amount() > max_amount:
+            print("You have too much cards! Choose which one to discard specifying it's ID:")
+            for element in invent.content:
+                print(element)
+            items_to_discard.append(invent.take_by_id(int(input())))
+
+        return items_to_discard
 
 
 class Dracula(Player):
@@ -51,4 +69,12 @@ class Hunter(Player):
 
     def check_if_dead(self):
         return super().check_if_dead() or self.bites >= self.max_bites
+
+    def get_item_card(self, get_item_function, repeats) -> list:
+        for _ in range(repeats):
+
+            self.item_cards.add([get_item_function()])
+
+        return self.check_inventory_overload(self.item_cards, self.max_items)
+
 
