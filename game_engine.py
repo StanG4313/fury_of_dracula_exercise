@@ -226,11 +226,15 @@ class GameEngine:
 
     def load_state(self, file_path, display):
         file_path = "saves/" + file_path + ".pkl"
-        with open(file_path, 'rb') as file:
-            engine = pickle.load(file)
-            engine.show = display
-        self.show.loadsave_report(file_path, load = True)
-        return engine
+        try:
+            with open(file_path, 'rb') as file:
+                engine = pickle.load(file)
+                engine.show = display
+            self.show.loadsave_report(file_path, load=True)
+            return engine
+        except FileNotFoundError:
+            print("File doesn't exist!")
+            return None
 
     def play_day(self):
         self.show.phrase("play_day")  #TODO: add day, week info
