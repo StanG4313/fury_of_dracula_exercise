@@ -114,7 +114,7 @@ class Display:
 
         print(phrase[self.language])
 
-    def current_hunters_position(self, players, hunters_indexes, final=False):
+    def current_hunters_position(self, hunters, final=False):
         print()
         first_word = {"EN": "Current", "RU": "Текущие"}
 
@@ -127,10 +127,8 @@ class Display:
 
         print(first_word[self.language], phrase_ending[self.language])
 
-        for index in hunters_indexes:
-            if self.language == "RU" and players[index]["dynamic"]["location"] == "undefined":
-                players[index]["dynamic"]["location"] = "не указано"
-            print(players[index][name[self.language]], ": ", players[index]["dynamic"]["location"], sep="")
+        for hunter in hunters:
+            print(hunter.__getattribute__(name[self.language]), ": ", hunter.location, sep="")
         print()
 
     def describe_locations_list(self, locations):
@@ -200,7 +198,7 @@ class Display:
         name = {"EN": "name_en", "RU": "name_ru"}
         phrase = {"EN": "please, confirm readiness by typing Y below:",
                   "RU": "пожалуйста, подтвердите готовность вводом символа Y ниже"}
-        print(hunter[name[self.language]], phrase[self.language])
+        print(hunter.__getattribute__(name[self.language]), phrase[self.language])
 
     def loadsave_report(self, file, load=False):
         process = {"EN": "loaded from file", "RU": "загружено из файла"} if load else {"EN": "saved to file",
@@ -213,7 +211,7 @@ class Display:
         phrase = {"EN": "Current player:",
                   "RU": "Текущий игрок:"}
         print()
-        print(phrase[self.language], player[name[self.language]], )
+        print(phrase[self.language], player.__getattribute__(name[self.language]))
 
     def actions_available(self, actions_dict):
 
@@ -249,10 +247,10 @@ class Display:
         }
 
         if self.language == "RU":
-            print("Игрок", player["name_ru"], "перемещён из", move_from.get("title_ru", "госпиталя"), "в",
+            print("Игрок", player.name_ru, "перемещён из", move_from.get("title_ru", "госпиталя"), "в",
                   move_to["title_ru"], how["RU"][way_of_transportation], "успешно")
         else:
-            print("Player", player["name_en"], "moved from", move_from.get("title_en", "hospital"), "to",
+            print("Player", player.name_en, "moved from", move_from.get("title_en", "hospital"), "to",
                   move_to["title_en"], how["EN"][way_of_transportation], "successfully")
 
     @staticmethod

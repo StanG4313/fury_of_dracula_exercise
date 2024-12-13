@@ -6,10 +6,7 @@
     "name_en": "Dracula",
     "max_wounds": 15,
     "max_events": 4,
-    "refill_combat": 5,
-    "dynamic": {
-      "location": "undefined",
-      "wounds": 0}
+    "refill_combat": 5
   },
   {
     "id": 1,
@@ -19,14 +16,7 @@
     "max_wounds": 11,
     "max_bites": 2,
     "max_items": 3,
-    "max_events": 3,
-    "dynamic": {
-      "location": "undefined",
-      "wounds": 0,
-      "bites": 0,
-      "knock_down": 0,
-      "dead": 0
-    }
+    "max_events": 3
   },
   {
     "id": 2,
@@ -36,14 +26,7 @@
     "max_wounds": 9,
     "max_bites": 2,
     "max_items": 4,
-    "max_events": 4,
-    "dynamic": {
-      "location": "undefined",
-      "wounds": 0,
-      "bites": 0,
-      "knock_down": 0,
-      "dead": 0
-    }
+    "max_events": 4
   },
   {
     "id": 3,
@@ -53,14 +36,7 @@
     "max_wounds": 8,
     "max_bites": 3,
     "max_items": 3,
-    "max_events": 3,
-    "dynamic": {
-      "location": "undefined",
-      "wounds": 0,
-      "bites": 0,
-      "knock_down": 0,
-      "dead": 0
-    }
+    "max_events": 3
   },
   {
     "id": 4,
@@ -70,13 +46,6 @@
     "max_wounds": 9,
     "max_bites": 1,
     "max_items": 3,
-    "max_events": 3,
-    "dynamic": {
-      "location": "undefined",
-      "wounds": 0,
-      "bites": 0,
-      "knock_down": 0,
-      "dead": 0
-    }
+    "max_events": 3
   }
 ]

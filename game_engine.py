@@ -4,8 +4,9 @@ import pickle
 import sys
 
 from display import Display
-from decks import Inventory, Deck, EventsDeck, Discard
+from decks import Deck, EventsDeck, Discard
 from trail import Trail
+from players import Hunter, Dracula
 from map import GameMap
 
 default_config_path = "res/default_config.json"
@@ -74,16 +75,13 @@ class GameEngine:
         self.map = GameMap(game_preset.get("map", default_preset["map"]))
 
         with open(game_preset.get("players", default_preset["players"])) as players:
-            self.players = json.load(players)
-
-        for i in range(len(self.players)):
-            if self.players[i]["class"] == "dracula":
-                self.players[i]["dynamic"]["combat_cards"] = Inventory()
-                self.players[i]["dynamic"]["event_cards"] = Inventory()
-            else:
-                self.players[i]["dynamic"]["item_cards"] = Inventory()
-                self.players[i]["dynamic"]["event_cards"] = Inventory()
-                self.players[i]["dynamic"]["tickets"] = Inventory()
+            players = json.load(players)
+            self.hunters = list()
+            for player in players:
+                if player["class"] == "dracula":
+                    self.dracula = Dracula(player)
+                else:
+                    self.hunters.append(Hunter(player))
 
         self.config = default_config
         for key in game_config:
@@ -120,22 +118,20 @@ class GameEngine:
             result = "dracula_win"
             self.phase = "end"
 
-        for player in self.players:
-            if player["class"] == "dracula":
-                if player["dynamic"]["wounds"] >= player["max_wounds"]:
-                    result = "hunters_win"
-                    self.phase = "end"
+        if self.dracula.wounds >= self.dracula.max_wounds:
+            result = "hunters_win"
+            self.phase = "end"
         return result
 
     def check_actions_available(self, player):
         actions = dict()
         i = 1
-        current_location = player["dynamic"]["location"] # TODO: Change to .location method when changed to player/hunter class instead of dicts
+        current_location = player.location
 
-        if player["dynamic"]["dead"]:
+        if player.dead:
             actions["0"] = "dead"
             return actions
-        if player["dynamic"]["knock_down"]:
+        if player.knock_down:
             actions["1"] = "rise_up"
             return actions  # TODO: check it with active effect of more then one action at day
 
@@ -145,7 +141,7 @@ class GameEngine:
                 if len(self.map.get_locations_walk(current_location,1)) != 0:
                     actions[str(i)] = "move_by_road"
                     i += 1
-                if (len(player["dynamic"]["tickets"].content) != 0 and
+                if (len(player.tickets.content) != 0 and
                         len(self.map.get_locations_railway(current_location, 1, 1)) != 0):
                     actions[str(i)] = "move_by_railway"
                     i += 1
@@ -167,22 +163,14 @@ class GameEngine:
                 if self.map.find_by_id(current_location)["type"] != "hospital":
                     actions[str(i)] = "buy_tickets"
                     i += 1
-
-
-            # TODO: add actions: special, use card, trade with other hunter
-
+        # TODO: add actions: special, use card, trade with other hunter
         return actions
 
     def prepare_game(self):
         self.show.phrase("prepare_game")
         hunters_spawn_available = [location for location in self.map.locations if location["type"] == "city"]
 
-        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
-        dracula_index = [index for index in range(len(self.players)) if index not in hunters_indexes][0]
-
         confirms = [False]
-
-        self.show.current_hunters_position(self.players, hunters_indexes)
 
         dracula_available_spawn_locations = None
 
@@ -190,20 +178,20 @@ class GameEngine:
             self.show.available_start_locations(hunters_spawn_available)
 
             dracula_available_spawn_locations = [location["id"] for location in hunters_spawn_available]
-            for index in hunters_indexes:
+            for hunter in self.hunters:
                 location = None
                 while location not in [str(location["id"]) for location in self.map.locations]:
-                    self.show.ask_player_to_choose_start_location(self.players[index])
+                    self.show.ask_player_to_choose_start_location(hunter)
                     location = input()
                 if int(location) in dracula_available_spawn_locations:
                     dracula_available_spawn_locations.remove(int(location))
-                self.players[index]["dynamic"]["location"] = location
+                hunter.location = location
 
-            self.show.current_hunters_position(self.players, hunters_indexes)
+            self.show.current_hunters_position(self.hunters)
 
             confirms = []
-            for index in hunters_indexes:
-                self.show.ask_hunter_to_confirm_readiness(self.players[index])
+            for hunter in self.hunters:
+                self.show.ask_hunter_to_confirm_readiness(hunter)
                 response = input()
                 if response.upper() == "Y":
                     confirms.append(True)
@@ -211,17 +199,21 @@ class GameEngine:
                     confirms.append(False)
                     break
 
-        self.show.current_hunters_position(self.players, hunters_indexes, final=True)
+        self.show.current_hunters_position(self.hunters, final=True)
 
-        self.players[dracula_index]["dynamic"]["combat_cards"].add([self.confronts_deck.take_first() for _ in range(5)])
+        self.dracula.combat_cards.add([self.confronts_deck.take_first() for _ in range(5)])
+
+        #Show dracula his cards in hand
+        for card in  self.dracula.combat_cards.content:
+            print(card)
 
         location = None
 
-        while (self.players[dracula_index]["dynamic"]["location"]) not in dracula_available_spawn_locations:
-            self.show.ask_player_to_choose_start_location(self.players[dracula_index])
+        while self.dracula.location not in dracula_available_spawn_locations:
+            self.show.ask_player_to_choose_start_location(self.dracula)
             location = input()
             if location.isdigit():
-                self.players[dracula_index]["dynamic"]["location"] = int(location)
+                self.dracula.location = int(location)
 
         self.trail.add_new_trail_item(location, self.get_hunters_locations())
         self.phase = "day"
@@ -290,8 +282,7 @@ class GameEngine:
         return
 
     def move_by_road(self, player, distance=1):
-        current_location = player["dynamic"]["location"]
-        locations_available = self.map.get_locations_walk(current_location, distance)
+        locations_available = self.map.get_locations_walk(player.location, distance)
         locations_full_info = list(map(self.map.find_by_id, locations_available))
         new_location = None
 
@@ -301,9 +292,9 @@ class GameEngine:
             if new_location == "CANCEL":
                 return False
             if new_location.isdigit() and int(new_location) in locations_available:
-                player["dynamic"]["location"] = new_location
+                player.location = new_location
                 # TODO: add trail check and the place for dracula reaction with event cards
-                self.show.player_moved(player, self.map.find_by_id(current_location),
+                self.show.player_moved(player, self.map.find_by_id(player.location),
                                        self.map.find_by_id(new_location), "road")
                 if self.trail.check_if_city_in_trail(new_location):
                     self.trail.disclose_city_in_trail(new_location)
@@ -317,8 +308,7 @@ class GameEngine:
         pass
 
     def move_by_sea(self, player, distance=1):
-        current_location = player["dynamic"]["location"]
-        locations_available = self.map.get_locations_sea(current_location, distance)
+        locations_available = self.map.get_locations_sea(player.location, distance)
         locations_full_info = list(map(self.map.find_by_id, locations_available))
         new_location = None
 
@@ -328,9 +318,9 @@ class GameEngine:
             if new_location == "CANCEL":
                 return False
             if new_location.isdigit() and int(new_location) in locations_available:
-                player["dynamic"]["location"] = new_location
+                player.location = new_location
                 # TODO: add trail check and the place for dracula reaction with event cards
-                self.show.player_moved(player, self.map.find_by_id(current_location),
+                self.show.player_moved(player, self.map.find_by_id(player.location),
                                        self.map.find_by_id(new_location), "sea")
                 # TODO: add trail update after each move of the hunter
                 return True
@@ -339,20 +329,19 @@ class GameEngine:
     def heal(player):
         #TODO: add request if wounds == 0, as player gonna skip the turn
 
-        if player["class"] == "doc":
-            player["dynamic"]["wounds"] -=2
+        if player.player_class == "doc":
+            player.wounds -=2
         else:
-            player["dynamic"]["wounds"] -= 1
+            player.wounds -= 1
 
-        if player["dynamic"]["wounds"] < 0:
-            player["dynamic"]["wounds"] = 0
+        if player.wounds < 0:
+            player.wounds = 0
         print("heal") # TODO: add proper notification of heal applied
         return True
 
     def search(self, player):
         # TODO: add usage of items
-        current_location = player["dynamic"]["location"]
-        card_disclosed, combat_card = self.trail.disclose_combat_card(current_location)
+        card_disclosed, combat_card = self.trail.disclose_combat_card(player.location) # TODO: search disclose ALL confront cards at the city
         if card_disclosed:
             print("Card disclosed:", combat_card)
         result = self.try_to_clean_city(player, combat_card)
@@ -365,7 +354,6 @@ class GameEngine:
 
     def try_to_clean_city(self, player, card):
         print("City_clean_WIP")
-        current_location = player["dynamic"]["location"]
         print("Will this hunter succeed at location cleaning?")
         result = None
 
@@ -373,15 +361,12 @@ class GameEngine:
             result = input('Enter "Y" if yes, and "N" if no \n').upper()
 
         if result == "Y":
-            self.trail.clean_combat_card(current_location)
+            self.trail.clean_combat_card(player.location)
             return True
         else:
             return False
 
     def shop(self, player):
-        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
-        dracula = self.players[[index for index in range(len(self.players)) if index not in hunters_indexes][0]]
-        current_location = player["dynamic"]["location"]
         night = self.phase == "night"
 
         if night:
@@ -392,7 +377,7 @@ class GameEngine:
             card_taken = self.events_deck.take_last()
 
             if card_taken["for_dracula"]:
-                dracula["dynamic"]["event_cards"].add([card_taken])
+                self.dracula.event_cards.add([card_taken])
                 print("Dracula got an event card")
 
         else:
@@ -402,14 +387,14 @@ class GameEngine:
                 self.events_discard.add([card_taken])
                 print("Dracula card goes to discard")
 
-        items_amount = 2 if player["class"] == "lord" else 1
+        items_amount = 2 if player.player_class == "lord" else 1
 
-        if self.map.find_by_id(current_location)["big"]:
-            player["dynamic"]["item_cards"].add([self.items_deck.take_first() for _ in range(items_amount)])  # TODO: check how it works if lord takes two cards, but there is only one left
+        if self.map.find_by_id(player.location)["big"]:
+            player.item_cards.add([self.items_deck.take_first() for _ in range(items_amount)])  # TODO: check how it works if lord takes two cards, but there is only one left
             print(items_amount, "item(s) added to player's inventory")
 
         if not card_taken["for_dracula"]:
-            player["dynamic"]["event_cards"].add([card_taken])
+            player.item_cards.add([card_taken])
             print("Event card added to player's inventory")
 
         return True
@@ -419,20 +404,20 @@ class GameEngine:
         second = False
 
         while not stop:
-            if player["dynamic"]["tickets"].get_items_amount() >= 2:
-                for ticket in player["dynamic"]["tickets"].content:
+            if player.tickets.get_items_amount() >= 2: #TODO: change to "while", just in case
+                for ticket in player.tickets.content:
                     print(ticket)
 
                 print("choose which one to discard (specify it's ID):")
                 ticket_id = input()
-                self.tickets_discard.add([player["dynamic"]["tickets"].take_by_id(ticket_id)])
+                self.tickets_discard.add([player.tickets.take_by_id(ticket_id)])
                 print("Ticket with ID", ticket_id, "discarded")
 
-            player["dynamic"]["tickets"].add([self.tickets_deck.take_first()])
+            player.tickets.add([self.tickets_deck.take_first()])
             print("Ticket added to player's inventory")
             stop = True
 
-            if player["class"] == "lord":
+            if player.player_class == "lord":
                 if not second:
                     print('Would you like to buy another ticket? Enter "Y" if yes')
 
@@ -459,26 +444,23 @@ class GameEngine:
         pass
 
     def fight_with_dracula_check(self):
-        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
-        dracula = self.players[[index for index in range(len(self.players)) if index not in hunters_indexes][0]]
-
-        if dracula["dynamic"]["location"] in self.get_hunters_locations():
+        if self.dracula.location in self.get_hunters_locations():
             print("Dracula gonna fight with some hunter(s)")
 
 
     def hunters_act(self):
 
         actions = {
-            "move_by_road": lambda: self.move_by_road(current_player),
-            "move_by_railway": lambda: self.move_by_railway(current_player),
-            "move_by_sea": lambda: self.move_by_sea(current_player),
-            "search": lambda: self.search(current_player),
-            "heal": lambda: self.heal(current_player),
-            "shop": lambda: self.shop(current_player),
-            "buy_tickets": lambda: self.buy_tickets(current_player),
-            "use_card": lambda: self.use_card(current_player),
-            "trade": lambda: self.trade(current_player),
-            "special": lambda: self.special(current_player),
+            "move_by_road": lambda: self.move_by_road(hunter),
+            "move_by_railway": lambda: self.move_by_railway(hunter),
+            "move_by_sea": lambda: self.move_by_sea(hunter),
+            "search": lambda: self.search(hunter),
+            "heal": lambda: self.heal(hunter),
+            "shop": lambda: self.shop(hunter),
+            "buy_tickets": lambda: self.buy_tickets(hunter),
+            "use_card": lambda: self.use_card(hunter),
+            "trade": lambda: self.trade(hunter),
+            "special": lambda: self.special(hunter),
         }
 
         hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]  # TODO: review after adding multiple hunter actions for day card
@@ -486,17 +468,16 @@ class GameEngine:
         if "custom_order" in self.active_effects:
             pass  # TODO: add after adding custom order active effect and event card
         else:
-            for i in hunters_indexes:
-                current_player = self.players[i]
-                self.show.current_player(current_player)
-                actions_available = self.check_actions_available(current_player)
+            for hunter in self.hunters:
+                self.show.current_player(hunter)
+                actions_available = self.check_actions_available(hunter)
                 if actions_available.get("0") == "dead":
                     print(
                         "No action because the player is dead")  # TODO: add notification that player is dead and will be transported to the closest hospital
                     continue
                 elif actions_available.get("1") == "rise_up":
-                    current_player["dynamic"]["knock_down"] = 0  # TODO: change to player class method
-                    print("The only available action for this player is to rise up")  # TODO: add notification of player rising up as an action
+                    if hunter.knock_down:
+                        print("The only available action for this player is to rise up")  # TODO: add notification of player rising up as an action
                     continue  # May be different if we have more than one action for hunters at day
                 # TODO: add check active effects (bats) applied to the player (and actions following)
                 # TODO: add turn skip if player located at the sea at night
@@ -509,7 +490,7 @@ class GameEngine:
 
                     while not result:
                         self.show.public_info(self)
-                        self.show.private_info(current_player)
+                        self.show.private_info(hunter)
                         self.show.actions_available(actions_available)
                         action_chosen = input()
                         result = actions.get(actions_available.get(action_chosen), lambda: None)()
@@ -520,27 +501,22 @@ class GameEngine:
         for cell in self.trail.trail:
             print(cell, self.trail.trail[cell])
 
-        hunters_indexes = [i for i in range(len(self.players)) if self.players[i]["class"] != "dracula"]
-        dracula = self.players[[index for index in range(len(self.players)) if index not in hunters_indexes][0]]
-
-        self.show.current_hunters_position(self.players, hunters_indexes)
-        for card in dracula["dynamic"]["combat_cards"].content:
+        self.show.current_hunters_position(self.hunters)
+        for card in self.dracula.combat_cards.content:
             print(card)
 
-        self.move_by_road(dracula) # TODO: add inability for Dracula to go to the city from trail again
+        self.move_by_road(self.dracula) # TODO: add inability for Dracula to go to the city from trail again
 
-        activation_card = None
-
-        if dracula["dynamic"]["location"] in self.get_hunters_locations():
-            activation_card = self.trail.add_new_trail_item(dracula["dynamic"]["location"], self.get_hunters_locations())
+        if self.dracula.location in self.get_hunters_locations():
+            activation_card = self.trail.add_new_trail_item(self.dracula.location, self.get_hunters_locations())
 
         else:
             id_chosen = input("Specify ID of the card you want to place to your new location: \n")
-            card_chosen = dracula["dynamic"]["combat_cards"].take_by_id(id_chosen)
-            activation_card = self.trail.add_new_trail_item(dracula["dynamic"]["location"], self.get_hunters_locations(), card_chosen)
+            card_chosen = self.dracula.combat_cards.take_by_id(id_chosen)
+            activation_card = self.trail.add_new_trail_item(self.dracula.location, self.get_hunters_locations(), card_chosen)
 
-            if len(dracula["dynamic"]["combat_cards"].content) < 5:
-                dracula["dynamic"]["combat_cards"].add([self.confronts_deck.take_first()])
+            if len(self.dracula.combat_cards.content) < 5:
+                self.dracula.combat_cards.add([self.confronts_deck.take_first()])
                 print("Dracula took card")
 
         if activation_card:
@@ -549,9 +525,7 @@ class GameEngine:
         return
 
     def get_hunters_locations(self):
-        locations = [player["dynamic"]["location"] for player in self.players if player["class"] != "dracula"]
-
-        return locations
+        return [hunter.location for hunter in self.hunters]
 
     def card_apply_effect(self, card):
         print("Card activation effect applied WIP")
