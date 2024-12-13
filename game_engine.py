@@ -246,6 +246,7 @@ class GameEngine:
 
     def play_sunset(self):
         self.show.phrase("play_sunset")
+        self.show.public_info(self)
 
         self.hunters_cards()
         self.fight_with_dracula_check()
