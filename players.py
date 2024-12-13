@@ -17,7 +17,7 @@ class Player:
     def get_wound(self, amount: int()):
         self.wounds += amount
 
-    def check_if_dead(self):
+    def check_if_dead(self) -> bool:
         return self.wounds >= self.max_wounds
 
     def get_event_card(self, card) -> list:
@@ -67,7 +67,7 @@ class Hunter(Player):
     def get_bite(self):
         self.bites += 1
 
-    def check_if_dead(self):
+    def check_if_dead(self) -> bool:
         return super().check_if_dead() or self.bites >= self.max_bites
 
     def get_item_card(self, get_item_function, repeats) -> list:
