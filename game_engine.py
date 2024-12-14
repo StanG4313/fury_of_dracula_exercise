@@ -58,21 +58,22 @@ class GameEngine:
         for attribute, key in attributes:
             setattr(self, attribute, game_preset.get(key, default_preset[key]))
 
-        self.confronts_deck = game_preset.get("confronts_deck", Deck(default_preset["confronts_deck"]))
-        self.fight_deck = game_preset.get("fight_deck", Deck(default_preset["fight_deck"]))
-        self.events_deck = game_preset.get("events_deck", EventsDeck(default_preset["events_deck"]))
-        self.items_discard = game_preset.get("items_discard", Discard(default_preset["items_discard"]))
-        self.tickets_discard = game_preset.get("tickets_discard", Discard(default_preset["tickets_discard"]))
         self.confronts_discard = game_preset.get("confronts_discard", Discard(default_preset["confronts_discard"]))
+        self.confronts_deck = game_preset.get("confronts_deck", Deck(related_discard=self.confronts_discard, file_path=default_preset["confronts_deck"]))
+        self.fight_deck = game_preset.get("fight_deck", Deck(default_preset["fight_deck"]))
         self.events_discard = game_preset.get("events_discard", Discard(default_preset["events_discard"]))
+        self.events_deck = game_preset.get("events_deck", EventsDeck(related_discard=self.events_discard, file_path=default_preset["events_deck"]))
+        self.items_discard = game_preset.get("items_discard", Discard(default_preset["items_discard"]))
+        self.items_deck = game_preset.get("items_deck", Deck(related_discard= self.items_discard, file_path=default_preset["items_deck"]))
+        self.tickets_discard = game_preset.get("tickets_discard", Discard(default_preset["tickets_discard"]))
+        self.tickets_deck = game_preset.get("tickets_deck", Deck(related_discard= self.tickets_discard, file_path=default_preset["tickets_deck"]))
+
+        self.trail = game_preset.get("Trail", Trail())
+        self.map = GameMap(game_preset.get("map", default_preset["map"]))
 
         self.show.engine_startup_with_timestamp("start", start_time)
 
-        self.items_deck = game_preset.get("items_deck", Deck(default_preset["items_deck"]))
-        self.tickets_deck = game_preset.get("tickets_deck", Deck(default_preset["tickets_deck"]))
-        self.trail = game_preset.get("Trail", Trail())
 
-        self.map = GameMap(game_preset.get("map", default_preset["map"]))
 
         with open(game_preset.get("players", default_preset["players"])) as players:
             players = json.load(players)

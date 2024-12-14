@@ -60,16 +60,24 @@ class Inventory(Discard):
 
 
 class Deck(BaseDeck):
+    def __init__(self, related_discard:Discard, file_path=None, ):
+        super().__init__(file_path)
+        self.related_discard = related_discard
+
     def shuffle(self):
         random.shuffle(self.content)
 
     def take_first(self):
-        if self.content:
-            first_element = self.content[0]
-            del self.content[0]
-            return first_element
-        else:
-            return None
+        if not self.content:
+            print("Deck refilled")
+            self.refill()
+
+        first_element = self.content[0]
+        del self.content[0]
+        return first_element
+
+    def refill(self):
+        self.content = self.related_discard.empty()
 
     def add(self, items):
         super().add(items)
