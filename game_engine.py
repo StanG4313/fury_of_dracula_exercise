@@ -500,7 +500,8 @@ class GameEngine:
                     continue
                 elif actions_available.get("1") == "rise_up":
                     if hunter.knock_down:
-                        print("The only available action for this player is to rise up")  # TODO: add notification of player rising up as an action
+                        print("The only available action for this player is to rise up")
+                        hunter.hunter_rise_up()
                     continue  # May be different if we have more than one action for hunters at day
                 # TODO: add check active effects (bats) applied to the player (and actions following)
                 elif len(actions_available) == 0:

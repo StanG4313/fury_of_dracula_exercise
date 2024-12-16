@@ -77,4 +77,10 @@ class Hunter(Player):
 
         return self.check_inventory_overload(self.item_cards, self.max_items)
 
+    def hunter_knock_down(self):
+        self.knock_down = True
+
+    def hunter_rise_up(self):
+        self.knock_down = False
+
 
