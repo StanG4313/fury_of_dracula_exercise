@@ -336,16 +336,13 @@ class GameEngine:
                 return True
 
     @staticmethod
-    def heal(player):
+    def heal(hunter):
         #TODO: add request if wounds == 0, as player gonna skip the turn
 
-        if player.player_class == "doc":
-            player.wounds -=2
-        else:
-            player.wounds -= 1
+        amount = 2 if hunter.player_class == "doc" else 1
 
-        if player.wounds < 0:
-            player.wounds = 0
+        hunter.heal(amount)
+
         print("heal") # TODO: add proper notification of heal applied
         return True
 

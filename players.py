@@ -25,6 +25,11 @@ class Player:
 
         return self.check_inventory_overload(self.event_cards, self.max_events)
 
+    def heal(self, amount):
+        self.wounds -= amount
+        if self.wounds < 0:
+            self.wounds = 0
+
 
     @staticmethod
     def check_inventory_overload(invent: Inventory, max_amount: int()) -> list:
