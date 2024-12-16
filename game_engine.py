@@ -143,7 +143,7 @@ class GameEngine:
                     actions[str(i)] = "move_by_road"
                     i += 1
                 if (len(player.tickets.content) != 0 and
-                        len(self.map.get_locations_railway(current_location, 1, 1)) != 0):
+                        len(self.map.get_locations_railway(int(current_location), 1, 1)) != 0):
                     actions[str(i)] = "move_by_railway"
                     i += 1
                 if len(self.map.get_locations_sea(current_location,1)):
