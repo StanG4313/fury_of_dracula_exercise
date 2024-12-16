@@ -135,6 +135,9 @@ class GameEngine:
         if player.knock_down:
             actions["1"] = "rise_up"
             return actions  # TODO: check it with active effect of more then one action at day
+        if self.map.find_by_id(current_location)["type"] == "sea":
+            actions["0"] = "sea"
+            return actions
 
 
         if self.phase in ["day", "night"]:
@@ -490,12 +493,15 @@ class GameEngine:
                     print(
                         "No action because the player is dead")  # TODO: add notification that player is dead and will be transported to the closest hospital
                     continue
+                elif actions_available.get("0") == "sea":
+                    print(
+                        "No action because the player is located at sea at night")
+                    continue
                 elif actions_available.get("1") == "rise_up":
                     if hunter.knock_down:
                         print("The only available action for this player is to rise up")  # TODO: add notification of player rising up as an action
                     continue  # May be different if we have more than one action for hunters at day
                 # TODO: add check active effects (bats) applied to the player (and actions following)
-                # TODO: add turn skip if player located at the sea at night
                 elif len(actions_available) == 0:
                     print("Turn skipped (no actions available, dunno why ¯\\_(ツ)_/¯)")
                     continue
