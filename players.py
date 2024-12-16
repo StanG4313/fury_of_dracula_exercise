@@ -72,6 +72,14 @@ class Hunter(Player):
     def get_bite(self):
         self.bites += 1
 
+    def heal_bite(self):
+        if self.player_class == "mina":
+            print("Mina can't heal her bite")
+            return False
+        else:
+            self.bites -= 1
+            return True
+
     def check_if_dead(self) -> bool:
         return super().check_if_dead() or self.bites >= self.max_bites
 
